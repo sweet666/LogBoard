@@ -1,0 +1,94 @@
+<template>
+    <div class="logBoard">
+        <template if:true={isLoading}>
+        <lightning-spinner 
+            alternative-text="Loading"
+            size="medium">
+        </lightning-spinner>
+        </template>
+
+        <div class="head-container">
+            <lightning-layout>
+                <lightning-layout-item padding="around-small" class="header-block exparation">
+                    <template if:true={isDebugActive}>
+                        {traceFlagExpiration}
+                    </template>
+                    <template if:false={isDebugActive}>
+                        Debug disabled
+                    </template>
+                </lightning-layout-item>
+                <lightning-layout-item padding="around-small" class="header-block">
+                    <template if:true={isDebugActive}>
+                        <lightning-button name="StopLogs"
+                            label="Stop"
+                            variant="destructive"
+                            onclick={stopTraceFlag}>
+                        </lightning-button>
+                    </template>
+                    <template if:false={isDebugActive}>
+                        <lightning-button name="EnableLogs"
+                            label="Enable"
+                            variant="brand"
+                            onclick={updateTraceFlag}>
+                        </lightning-button>
+                    </template>
+                </lightning-layout-item>
+                <lightning-layout-item padding="around-small" class="duration">
+                    <lightning-radio-group 
+                        name="debugDuration"
+                        label="Debug Duration"
+                        options={debugDurationOptions}
+                        value={debugDuration}
+                        type="button"
+                        onchange={handleDurationValue}
+                        disabled={isDebugActive}>
+                    </lightning-radio-group>
+                </lightning-layout-item>
+                <lightning-layout-item padding="around-small" class="header-block">
+                    <lightning-button-icon 
+                        icon-name="utility:refresh" 
+                        alternative-text="Refresh" 
+                        title="Refresh" 
+                        variant="brand"
+                        onclick={refreshTable}>
+                    </lightning-button-icon>
+                </lightning-layout-item>
+                <lightning-layout-item padding="around-small" class="header-block">
+                    <lightning-button-icon 
+                        icon-name="utility:delete" 
+                        alternative-text="Delete All Logs" 
+                        title="Delete All Logs" 
+                        variant="brand"
+                        onclick={deleteLogs}
+                        disabled={isLogsDataEmpty}>
+                    </lightning-button-icon>
+                </lightning-layout-item>
+                <!-- <lightning-layout-item padding="around-small" class="search-input">
+                    <lightning-input type="text">
+                    </lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item class="search-button">
+                    <lightning-button 
+                        label="Search"
+                        variant="brand"
+                        onclick={handleSearch}>
+                    </lightning-button>
+                </lightning-layout-item> -->
+            </lightning-layout>
+        </div>
+    
+        <c-log-table 
+            logs-data={logsData}
+            onviewlog={handleViewLog}>
+        </c-log-table>
+    
+        <template if:true={isViewLog}>
+            <c-log-view
+                log-data={logBody}
+                onclose={closeViewLog}>
+            </c-log-view>
+        </template>
+    </div>
+
+
+</template>

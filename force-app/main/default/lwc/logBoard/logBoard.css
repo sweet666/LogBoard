@@ -1,0 +1,33 @@
+.head-container {
+    border: 1px solid #d8dde6;
+    margin-bottom: 20px;
+    height: 80px;
+}
+
+.duration {
+    padding-top: 0;
+}
+
+.header-block {
+    padding-top: 24px;
+}
+
+.header-block.exparation {
+    text-align: center;
+    width: 120px;
+    padding-top: 30px;
+}
+
+.logBoard {
+    border: 1px solid #d8dde6;
+    background: rgb(255, 255, 255);
+}
+
+.search-input {
+    padding-top: 5px;
+    padding-left: 80px;
+}
+
+.search-button {
+    padding-top: 23px;
+}

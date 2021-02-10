@@ -1,0 +1,8 @@
+.link {
+    cursor: pointer;
+    color: rgb(0, 109, 204);
+}
+
+.slds-truncate.status {
+    max-width: 770px;
+}

@@ -1,0 +1,58 @@
+<template>
+    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+        <thead>
+            <tr class="slds-line-height_reset">
+                <th class="table-head" scope="col">
+                    <div class="slds-truncate">
+                    </div>
+                </th>
+                <th class="table-head" scope="col">
+                    <div class="slds-truncate">
+                        USER
+                    </div>
+                </th>
+                <th class="table-head" scope="col">
+                    <div class="slds-truncate">
+                        OPERATION
+                    </div>
+                </th>
+                <th class="table-head" scope="col">
+                    <div class="slds-truncate">
+                        STATUS
+                    </div>
+                </th>
+                <th class="table-head" scope="col">
+                    <div class="slds-truncate">
+                        START DATETIME
+                    </div>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <template for:each={logsData} for:item="log" for:index="index">
+                <tr class="slds-hint-parent" key={log.id} data-row-index={index}>
+                    <th scope="row">
+                        <div 
+                            class="slds-truncate link"
+                            data-id={log.id}
+                            onclick={handleView}>
+                            View
+                        </div>
+                    </th>
+                    <td scope="row">
+                        <div class="slds-truncate">{log.userName}</div>
+                    </td>
+                    <td scope="row">
+                        <div class="slds-truncate">{log.operation}</div>
+                    </td>
+                    <td scope="row">
+                        <div class="slds-truncate status">{log.status}</div>
+                    </td>
+                    <td scope="row">
+                        <div class="slds-truncate">{log.startTime}</div>
+                    </td>
+                </tr>
+            </template>
+        </tbody>
+    </table>
+</template>

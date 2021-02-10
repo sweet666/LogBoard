@@ -1,0 +1,17 @@
+<template>
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container container">
+            <header class="slds-modal__header header">
+                <button class="slds-button slds-button_neutral" onclick={handleClose} title="Cancel">Close</button>
+            </header>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <div class="log-container">
+                    <lightning-formatted-rich-text 
+                        value={formattedLogData}>
+                    </lightning-formatted-rich-text>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</template>
