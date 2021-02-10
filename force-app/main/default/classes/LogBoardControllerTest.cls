@@ -36,17 +36,6 @@ private class LogBoardControllerTest {
     }
 
     @isTest
-    private static void getLogBodyTest() {
-        Test.setMock(HttpCalloutMock.class, new LogBoardAPIMocks.LogBodyMock());
-
-        Test.startTest();
-        String logBody = LogBoardController.getLogBody('000000000000000AAA');
-        Test.stopTest();
-
-        System.assertNotEquals(null, logBody);
-    }
-
-    @isTest
     private static void deleteDebugLogs() {
         Test.setMock(HttpCalloutMock.class, new LogBoardAPIMocks.LogBodyMock());
         LogBoardController.deleteDebugLogs();

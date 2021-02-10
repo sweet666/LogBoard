@@ -23,6 +23,11 @@
                 </th>
                 <th class="table-head" scope="col">
                     <div class="slds-truncate">
+                        SIZE MB
+                    </div>
+                </th>
+                <th class="table-head" scope="col">
+                    <div class="slds-truncate">
                         START DATETIME
                     </div>
                 </th>
@@ -47,6 +52,9 @@
                     </td>
                     <td scope="row">
                         <div class="slds-truncate status">{log.status}</div>
+                    </td>
+                    <td scope="row">
+                        <div class="slds-truncate status">{log.size}</div>
                     </td>
                     <td scope="row">
                         <div class="slds-truncate">{log.startTime}</div>
