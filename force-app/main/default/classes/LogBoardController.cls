@@ -75,18 +75,12 @@ public class LogBoardController {
     }
 
     @AuraEnabled(cacheable=false)
-    public static String getLogBody(String logId) {
-        String logIdPath = String.format(LOG_BODY_QUERY, new List<String> {logId});
+    public static CalloutParams getLogBodyCalloutParams() {
+        CalloutParams params = new CalloutParams();
+        params.url = ORG_URL + TOOLING_API_URI + LOG_BODY_QUERY;
+        params.authorization = 'OAuth ' + Utility.getSessionIdFromVFPage();
 
-        HttpHelper request = new HttpHelper('OAuth', 'GET');
-        request.setEndpoint(ORG_URL + TOOLING_API_URI + logIdPath);
-        HttpResponse response = request.send();
-
-        if (response.getStatusCode() < 200 && response.getStatusCode() >= 300) {
-            throw new AuraHandledException(response.getBody());
-        }
-
-        return response.getBody();
+        return params;
     }
 
     @AuraEnabled(cacheable=false)
@@ -95,7 +89,7 @@ public class LogBoardController {
         Set<Id> userIds = new Set<Id>();
 
         List<ApexLog> logs = [
-            SELECT Id, StartTime, Status, Operation, LogUserId 
+            SELECT Id, StartTime, Status, Operation, LogUserId, LogLength
             FROM ApexLog 
             ORDER BY StartTime DESC
             LIMIT 100
@@ -118,6 +112,10 @@ public class LogBoardController {
             logWrap.status = log.Status;
             logWrap.userName = userMap.get(log.LogUserId).Name;
             logWrap.startTime = log.StartTime.format('HH:mm:ss, dd MMM');
+            Decimal sizeValue = Decimal.valueOf(log.LogLength).divide((1024*1024),2);
+            logWrap.size = String.valueOf(
+                sizeValue != 0 ? sizeValue : 0.01
+            );
             logWrappers.add(logWrap);
         }
 
@@ -157,6 +155,12 @@ public class LogBoardController {
         @AuraEnabled public String status;
         @AuraEnabled public String operation;
         @AuraEnabled public String userName;
+        @AuraEnabled public String size;
+    }
+
+    public class CalloutParams {
+        @AuraEnabled public String url;
+        @AuraEnabled public String authorization;
     }
 
 }

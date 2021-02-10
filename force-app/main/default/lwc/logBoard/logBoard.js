@@ -5,11 +5,11 @@ import updateTraceFlag from '@salesforce/apex/LogBoardController.updateTraceFlag
 import stopTraceFlag from '@salesforce/apex/LogBoardController.stopTraceFlag';
 import getDebugLogs from '@salesforce/apex/LogBoardController.getDebugLogs';
 import deleteDebugLogs from '@salesforce/apex/LogBoardController.deleteDebugLogs';
-import getLogBody from '@salesforce/apex/LogBoardController.getLogBody';
+import getLogBodyCalloutParams from '@salesforce/apex/LogBoardController.getLogBodyCalloutParams';
 
 export default class LogBoard extends LightningElement {
 
-    debugDuration = '2';
+    debugDuration = '1';
     timeIntervalInstance;
     logBody = '';
     
@@ -163,12 +163,10 @@ export default class LogBoard extends LightningElement {
         this.isLoading = true;
         let logId = event.detail;
 
-        getLogBody({
+        getLogBodyCalloutParams({
             logId : logId
         }).then(result => {
-            this.logBody = result;
-            this.isViewLog = true;
-            this.isLoading = false;
+            this.getLogBody(result, logId);
         }).catch(error => {
             this.isLoading = false;
             this.showToast('', error.body.message, 'error');
@@ -185,6 +183,27 @@ export default class LogBoard extends LightningElement {
         this.searchTerm = searchTerm;
         
 
+    }
+
+    getLogBody(params, logId) {
+        let calloutURI = params.url.replace('{0}', logId)
+        fetch(calloutURI, {
+            method: "GET",
+            headers: {
+                "Authorization": params.authorization
+              }
+        }).then(
+            (response) => {
+                return response.text()
+            }
+        ).then(text => {
+            this.logBody = text;
+            this.isViewLog = true;
+            this.isLoading = false;
+        }).catch(error => {
+            this.isLoading = false;
+            this.showToast('', error.body.message, 'error');
+        });
     }
 
     closeViewLog() {
