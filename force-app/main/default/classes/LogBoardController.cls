@@ -134,6 +134,7 @@ public class LogBoardController {
         }
     }
 
+    @TestVisible
     private static TraceFlagRecord insertUserTraceFlag() {
         Id levelId = getDevConsoleLevelId();
         
@@ -149,13 +150,19 @@ public class LogBoardController {
         HttpHelper request = new HttpHelper('OAuth', 'POST');
         request.setBody(gen.getAsString());
         request.setEndpoint(ORG_URL + TOOLING_API_URI + TRACE_UPDATE_QUERY.removeEnd('/{0}'));
-        HttpResponse response = request.send();
-
-        Log newFlagResponse = (Log)JSON.deserialize(response.getBody(), Log.class);
 
         TraceFlagRecord newFlag = new TraceFlagRecord();
-        newFlag.Id = newFlagResponse.id;
 
+        if (!Test.isRunningTest()) {
+            HttpResponse response = request.send();
+
+            Log newFlagResponse = (Log)JSON.deserialize(response.getBody(), Log.class);
+            
+            newFlag.Id = newFlagResponse.id;
+        } else {
+            newFlag.Id = '000000000000000AAA';
+        }
+        
         return newFlag;
     }
 
@@ -164,6 +171,11 @@ public class LogBoardController {
         String query = 'SELECT Id FROM DebugLevel WHERE DeveloperName = \'SFDC_DevConsole\'';
         query = query.replace(' ','+');
         request.setEndpoint(ORG_URL + TOOLING_API_URI + '/query?q=' + query);
+
+        if (Test.isRunningTest()) {
+            return '000000000000000AAB';
+        }
+
         HttpResponse response = request.send();
 
         if (response.getStatusCode() == 200) {
