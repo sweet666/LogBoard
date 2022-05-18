@@ -41,4 +41,10 @@ private class LogBoardControllerTest {
         LogBoardController.deleteDebugLogs();
     }
 
+    @isTest
+    private static void insertUserTraceFlagTest() {
+        LogBoardController.TraceFlagRecord trace = LogBoardController.insertUserTraceFlag();
+        System.assertNotEquals(null, trace.Id);
+    }
+
 }
