@@ -8,4 +8,10 @@ export default class LogTable extends LightningElement {
         const logEvent = new CustomEvent('viewlog', {detail: logId});
         this.dispatchEvent(logEvent);
     }
+
+    handleDownload(event) {
+        let logId = event.target.dataset.id;
+        let url = window.location.origin + '/servlet/servlet.FileDownload?file=' + logId;
+        window.open(url, "_blank");
+    }
 }

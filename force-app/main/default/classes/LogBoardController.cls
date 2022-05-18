@@ -21,7 +21,7 @@ public class LogBoardController {
 
         if (response.getStatusCode() == 200) {
             TraceFlagResponse traceFlags = (TraceFlagResponse)JSON.deserialize(response.getBody(), TraceFlagResponse.class);
-            if (traceFlags.records != null) {
+            if (traceFlags.records != null && !traceFlags.records.isEmpty()) {
                 for (TraceFlagRecord trace : traceFlags.records) {
                     activeFlag = trace;
                     if (trace.ExpirationDate > System.now()) {
@@ -29,6 +29,9 @@ public class LogBoardController {
                         break;
                     }
                 }
+            } else {
+                activeFlag = insertUserTraceFlag();
+                isActive = false;
             }
         } else {
             throw new AuraHandledException(response.getBody());
@@ -131,6 +134,47 @@ public class LogBoardController {
         }
     }
 
+    private static TraceFlagRecord insertUserTraceFlag() {
+        Id levelId = getDevConsoleLevelId();
+        
+        JSONGenerator gen = JSON.createGenerator(true);
+        gen.writeStartObject();
+        gen.writeStringField('StartDate', System.now().addSeconds(2).format(TRACE_DATE_FORMAT));
+        gen.writeStringField('ExpirationDate', System.now().addSeconds(4).format(TRACE_DATE_FORMAT));
+        gen.writeStringField('DebugLevelId', levelId);
+        gen.writeStringField('LogType', 'USER_DEBUG');
+        gen.writeStringField('TracedEntityId', UserInfo.getUserId());
+        gen.writeEndObject();
+
+        HttpHelper request = new HttpHelper('OAuth', 'POST');
+        request.setBody(gen.getAsString());
+        request.setEndpoint(ORG_URL + TOOLING_API_URI + TRACE_UPDATE_QUERY.removeEnd('/{0}'));
+        HttpResponse response = request.send();
+
+        Log newFlagResponse = (Log)JSON.deserialize(response.getBody(), Log.class);
+
+        TraceFlagRecord newFlag = new TraceFlagRecord();
+        newFlag.Id = newFlagResponse.id;
+
+        return newFlag;
+    }
+
+    private static Id getDevConsoleLevelId() {
+        HttpHelper request = new HttpHelper('OAuth', 'GET');
+        String query = 'SELECT Id FROM DebugLevel WHERE DeveloperName = \'SFDC_DevConsole\'';
+        query = query.replace(' ','+');
+        request.setEndpoint(ORG_URL + TOOLING_API_URI + '/query?q=' + query);
+        HttpResponse response = request.send();
+
+        if (response.getStatusCode() == 200) {
+            DebugLevelResponse debugLevels = (DebugLevelResponse)JSON.deserialize(response.getBody(), DebugLevelResponse.class);
+            if (debugLevels.records != null && !debugLevels.records.isEmpty()) {
+                return debugLevels.records[0].Id;
+            }
+        }
+        return null;
+    }
+
     private static String getTraceRecordBody(String endDate) {
         JSONGenerator gen = JSON.createGenerator(true);
         gen.writeStartObject();
@@ -147,6 +191,14 @@ public class LogBoardController {
     public class TraceFlagRecord {
         @AuraEnabled public Id Id;
         @AuraEnabled public Datetime ExpirationDate;
+    }
+
+    public class DebugLevelResponse {
+        public List<DebugLevelRecord> records;
+    }
+
+    public class DebugLevelRecord {
+        @AuraEnabled public Id Id;
     }
 
     public class Log {

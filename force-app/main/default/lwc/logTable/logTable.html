@@ -8,6 +8,10 @@
                 </th>
                 <th class="table-head" scope="col">
                     <div class="slds-truncate">
+                    </div>
+                </th>
+                <th class="table-head" scope="col">
+                    <div class="slds-truncate">
                         USER
                     </div>
                 </th>
@@ -40,10 +44,18 @@
                         <div 
                             class="slds-truncate link"
                             data-id={log.id}
+                            onclick={handleDownload}>
+                            Download
+                        </div>
+                    </th>
+                    <td scope="row">
+                        <div 
+                            class="slds-truncate link"
+                            data-id={log.id}
                             onclick={handleView}>
                             View
                         </div>
-                    </th>
+                    </td>
                     <td scope="row">
                         <div class="slds-truncate">{log.userName}</div>
                     </td>
