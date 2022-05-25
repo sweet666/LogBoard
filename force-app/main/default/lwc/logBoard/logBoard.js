@@ -18,8 +18,13 @@ export default class LogBoard extends LightningElement {
     @track traceFlagId = '';
     @track traceFlagExpirationMS = 0;
     @track isViewLog = false;
-    logsData = [];
+    @track showSearchResults = false;
     searchTerm = '';
+    logsData = [];
+    searchData = [];
+    auth;
+    logBodyCalloutURL;
+    
 
     get debugDurationOptions() {
         return [
@@ -50,6 +55,7 @@ export default class LogBoard extends LightningElement {
     connectedCallback() {
         this.initTraceFlag();
         this.getLogs();
+        this.getLogBodyCalloutParams();
     }
 
 
@@ -163,10 +169,13 @@ export default class LogBoard extends LightningElement {
         this.isLoading = true;
         let logId = event.detail;
 
-        getLogBodyCalloutParams({
-            logId : logId
-        }).then(result => {
-            this.getLogBody(result, logId);
+        this.getLogBody(logId);
+    }
+
+    getLogBodyCalloutParams() {
+        getLogBodyCalloutParams().then(result => {
+            this.auth = result.authorization;
+            this.logBodyCalloutURL = result.url;
         }).catch(error => {
             this.isLoading = false;
             this.showToast('', error.body.message, 'error');
@@ -175,22 +184,110 @@ export default class LogBoard extends LightningElement {
 
     handleSearch() {
         let searchTerm = this.template.querySelector("lightning-input").value;
-
-        if (!searchTerm) {
+        if (!searchTerm || !this.logsData.length) {
             return;
         }
-
         this.searchTerm = searchTerm;
-        
+
+        this.isLoading = true;
+
+        let logBodyPromises = [];
+        this.logsData.forEach(function (log) {
+            logBodyPromises.push(new Promise((resolve, reject) => {
+                let calloutURI = this.logBodyCalloutURL.replace('{0}', log.id)
+            fetch(calloutURI, {
+                method: "GET",
+                headers: {
+                    "Authorization": this.auth
+                }
+            }).then(
+                (response) => {
+                    return response.text()
+                }
+            ).then(text => {
+                resolve({id: log.id, body: text});
+            }).catch(error => {
+                this.showToast('', error.body.message, 'error');
+                reject(new Error('Error in logBodyPromise')); 
+            });
+            }));
+        }, this);
+
+        Promise.all(logBodyPromises).then(results => {
+            this.buildSearchResults(results, searchTerm);
+        });
 
     }
 
-    getLogBody(params, logId) {
-        let calloutURI = params.url.replace('{0}', logId)
+    buildSearchResults(results, searchTerm) {
+        let searchData = [];
+
+        results.forEach(function (log) {
+            let logLines = log.body.split('\n');
+            for (let i = 0; i < logLines.length; i++) {
+                if (logLines[i].toLowerCase().includes(searchTerm.toLowerCase())) {
+                    let searched = '';
+                    if (logLines[i-1]) {
+                        searched = this.formatLine(logLines[i-1]);
+                    }
+                    searched = searched + this.formatLine(logLines[i]);
+                    if (logLines[i+1]) {
+                        searched = searched + this.formatLine(logLines[i+1]);
+                    }
+                    searchData.push({
+                        logId: log.id,
+                        body: searched
+                    });
+                }
+            }
+        }, this);
+        this.searchData = searchData;
+        this.isLoading = false;
+
+        if (this.searchData.length) {
+            this.showSearchResults = true;
+        } else {
+            this.showToast('', 'No results found', 'warning');
+        }
+    }
+
+    closeSearchResults() {
+        this.searchData = [];
+        this.showSearchResults = false;
+        this.searchTerm = '';
+        this.template.querySelector("lightning-input").value = '';
+    }
+
+    handleFullLog(event) {
+        this.closeSearchResults();
+        this.isLoading = true;
+        this.getLogBody(event.detail);
+    }
+
+    formatLine(entry) {
+        let formatted = '';
+        if (entry.includes('CODE_UNIT_') || entry.includes('METHOD_')) {
+            formatted += '<div style="color: rgb(230, 219, 116)">' + entry + '</div>'
+        } else if (entry.includes('CALLOUT_')) {
+            formatted += '<div style="color: rgb(174, 129, 255)">' + entry + '</div>'
+        } else if (entry.includes('SOQL_EXECUTE_')) {
+            formatted += '<div style="color: rgb(102, 217, 239)">' + entry + '</div>'
+        } else if (entry.includes('USER_DEBUG')) {
+            formatted += '<div style="color: rgb(166, 226, 46)">' + entry + '</div>'
+        } else if (entry.includes('EXCEPTION_THROWN') || entry.includes('FATAL_ERROR')) {
+            formatted += '<div style="color: red">' + entry + '</div>'
+        } else {
+            formatted += '<div>' + entry + '</div>'
+        }
+        return formatted;
+    }
+
+    getLogBody(logId) {
+        let calloutURI = this.logBodyCalloutURL.replace('{0}', logId)
         fetch(calloutURI, {
             method: "GET",
             headers: {
-                "Authorization": params.authorization
+                "Authorization": this.auth
               }
         }).then(
             (response) => {
@@ -219,5 +316,11 @@ export default class LogBoard extends LightningElement {
         };
         const showToastEvent = new ShowToastEvent(toastParams);
         this.dispatchEvent(showToastEvent);
+    }
+
+    handleSearchKey(event) {
+        if (event.keyCode === 13) {
+            this.handleSearch();
+        }
     }
 }

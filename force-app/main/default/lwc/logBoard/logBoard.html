@@ -63,17 +63,23 @@
                         disabled={isLogsDataEmpty}>
                     </lightning-button-icon>
                 </lightning-layout-item>
-                <!-- <lightning-layout-item padding="around-small" class="search-input">
-                    <lightning-input type="text">
+                <lightning-layout-item padding="around-small" class="search-input">
+                    <lightning-input 
+                        type="text" 
+                        value={searchTerm}
+                        placeholder="search in logs"
+                        onkeydown={handleSearchKey}>
                     </lightning-input>
                 </lightning-layout-item>
                 <lightning-layout-item class="search-button">
-                    <lightning-button 
-                        label="Search"
+                    <lightning-button-icon 
+                        icon-name="utility:search" 
+                        alternative-text="Search" 
+                        title="Search"
                         variant="brand"
                         onclick={handleSearch}>
-                    </lightning-button>
-                </lightning-layout-item> -->
+                    </lightning-button-icon>
+                </lightning-layout-item>
             </lightning-layout>
         </div>
     
@@ -87,6 +93,14 @@
                 log-data={logBody}
                 onclose={closeViewLog}>
             </c-log-view>
+        </template>
+
+        <template if:true={showSearchResults}>
+            <c-log-search-result
+                search-data={searchData}
+                onclose={closeSearchResults}
+                onfulllog={handleFullLog}>
+            </c-log-search-result>
         </template>
     </div>
 

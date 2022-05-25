@@ -1,0 +1,21 @@
+.slds-modal__header.header {
+    text-align: inherit;
+}
+
+.slds-modal__container.container {
+    width: 95%;
+    max-width: initial;
+    max-height: 90%;
+    min-height: -webkit-fill-available;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.log-container {
+    background-color: black;
+    color: white;
+    overflow-y: scroll;
+    font-family: "Courier New", Courier, mono;
+    font-size: 18px;
+    white-space: pre;
+}
