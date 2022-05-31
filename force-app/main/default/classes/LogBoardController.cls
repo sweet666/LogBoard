@@ -94,6 +94,7 @@ public class LogBoardController {
         List<ApexLog> logs = [
             SELECT Id, StartTime, Status, Operation, LogUserId, LogLength
             FROM ApexLog 
+            WHERE Operation != '/apex/lgb__sessionidpage'
             ORDER BY StartTime DESC
             LIMIT 100
         ];
