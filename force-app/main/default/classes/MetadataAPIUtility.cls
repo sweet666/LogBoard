@@ -1,10 +1,10 @@
-public class MetadataAPIUtility {
+global class MetadataAPIUtility {
 
     private static final String BASE_URL = URL.getSalesforceBaseUrl().toExternalForm();
     private static final String  METADATA_NAME = 'self';
 
 
-    public static void createRemoteSiteSetting() {
+    global static void createRemoteSiteSetting() {
         List<MetadataService.Metadata> allMetadataList = new List<MetadataService.Metadata>();
 
         MetadataService.RemoteSiteSetting remoteSiteDetails = new MetadataService.RemoteSiteSetting();
@@ -15,13 +15,10 @@ public class MetadataAPIUtility {
         allMetadataList.add(remoteSiteDetails);
 
         MetadataService.MetadataPort service = createService();
-
-        try {
-            List<MetadataService.UpsertResult> results = service.upsertMetadata(allMetadataList);
-        } catch (Exception ex) {}
+        List<MetadataService.UpsertResult> results = service.upsertMetadata(allMetadataList);
     }
 
-    public static void createTrustedSiteSetting() {
+    global static void createTrustedSiteSetting() {
         List<MetadataService.Metadata> allMetadataList = new List<MetadataService.Metadata>();
 
         MetadataService.CspTrustedSite trustedSiteDetails = new MetadataService.CspTrustedSite();
@@ -37,10 +34,7 @@ public class MetadataAPIUtility {
         allMetadataList.add(trustedSiteDetails);
 
         MetadataService.MetadataPort service = createService();
-
-        try {
-            List<MetadataService.UpsertResult> results = service.upsertMetadata(allMetadataList);
-        } catch (Exception ex) {}
+        List<MetadataService.UpsertResult> results = service.upsertMetadata(allMetadataList);
     }
     
     private static MetadataService.MetadataPort createService() { 
