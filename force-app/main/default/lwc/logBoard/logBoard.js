@@ -57,6 +57,17 @@ export default class LogBoard extends LightningElement {
         this.initTraceFlag();
         this.getLogs();
         this.getLogBodyCalloutParams();
+
+        window.addEventListener("keydown", (event) => {
+            if (event.code && event.code === 'Escape') {
+                if (this.isViewLog) {
+                    this.closeViewLog();
+                }
+                if (this.showSearchResults) {
+                    this.closeSearchResults();
+                }
+            }
+        }, true);
     }
 
 
