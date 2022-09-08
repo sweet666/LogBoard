@@ -9,76 +9,88 @@
 
         <div class="head-container">
             <lightning-layout>
-                <lightning-layout-item padding="around-small" class="header-block exparation">
-                    <template if:true={isDebugActive}>
-                        {traceFlagExpiration}
-                    </template>
-                    <template if:false={isDebugActive}>
-                        Debug disabled
-                    </template>
+                <lightning-layout-item size="11">
+                    <lightning-layout>
+                        <lightning-layout-item padding="around-small" class="header-block exparation">
+                            <template if:true={isDebugActive}>
+                                {traceFlagExpiration}
+                            </template>
+                            <template if:false={isDebugActive}>
+                                Debug disabled
+                            </template>
+                        </lightning-layout-item>
+                        <lightning-layout-item padding="around-small" class="header-block">
+                            <template if:true={isDebugActive}>
+                                <lightning-button name="StopLogs"
+                                    label="Stop"
+                                    variant="destructive"
+                                    onclick={stopTraceFlag}>
+                                </lightning-button>
+                            </template>
+                            <template if:false={isDebugActive}>
+                                <lightning-button name="EnableLogs"
+                                    label="Enable"
+                                    variant="brand"
+                                    onclick={updateTraceFlag}>
+                                </lightning-button>
+                            </template>
+                        </lightning-layout-item>
+                        <lightning-layout-item padding="around-small" class="duration">
+                            <lightning-radio-group 
+                                name="debugDuration"
+                                label="Debug Duration"
+                                options={debugDurationOptions}
+                                value={debugDuration}
+                                type="button"
+                                onchange={handleDurationValue}
+                                disabled={isDebugActive}>
+                            </lightning-radio-group>
+                        </lightning-layout-item>
+                        <lightning-layout-item padding="around-small" class="header-block">
+                            <lightning-button-icon 
+                                icon-name="utility:refresh" 
+                                alternative-text="Refresh" 
+                                title="Refresh" 
+                                variant="brand"
+                                onclick={refreshTable}>
+                            </lightning-button-icon>
+                        </lightning-layout-item>
+                        <lightning-layout-item padding="around-small" class="header-block">
+                            <lightning-button-icon 
+                                icon-name="utility:delete" 
+                                alternative-text="Delete All Logs" 
+                                title="Delete All Logs" 
+                                variant="brand"
+                                onclick={deleteLogs}
+                                disabled={isLogsDataEmpty}>
+                            </lightning-button-icon>
+                        </lightning-layout-item>
+                        <lightning-layout-item padding="around-small" class="search-input">
+                            <lightning-input 
+                                type="text" 
+                                value={searchTerm}
+                                placeholder="search in logs"
+                                onkeydown={handleSearchKey}>
+                            </lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item class="search-button">
+                            <lightning-button-icon 
+                                icon-name="utility:search" 
+                                alternative-text="Search" 
+                                title="Search"
+                                variant="brand"
+                                onclick={handleSearch}>
+                            </lightning-button-icon>
+                        </lightning-layout-item>
+                    </lightning-layout>
                 </lightning-layout-item>
-                <lightning-layout-item padding="around-small" class="header-block">
-                    <template if:true={isDebugActive}>
-                        <lightning-button name="StopLogs"
-                            label="Stop"
-                            variant="destructive"
-                            onclick={stopTraceFlag}>
-                        </lightning-button>
-                    </template>
-                    <template if:false={isDebugActive}>
-                        <lightning-button name="EnableLogs"
-                            label="Enable"
-                            variant="brand"
-                            onclick={updateTraceFlag}>
-                        </lightning-button>
-                    </template>
-                </lightning-layout-item>
-                <lightning-layout-item padding="around-small" class="duration">
-                    <lightning-radio-group 
-                        name="debugDuration"
-                        label="Debug Duration"
-                        options={debugDurationOptions}
-                        value={debugDuration}
-                        type="button"
-                        onchange={handleDurationValue}
-                        disabled={isDebugActive}>
-                    </lightning-radio-group>
-                </lightning-layout-item>
-                <lightning-layout-item padding="around-small" class="header-block">
-                    <lightning-button-icon 
-                        icon-name="utility:refresh" 
-                        alternative-text="Refresh" 
-                        title="Refresh" 
-                        variant="brand"
-                        onclick={refreshTable}>
-                    </lightning-button-icon>
-                </lightning-layout-item>
-                <lightning-layout-item padding="around-small" class="header-block">
-                    <lightning-button-icon 
-                        icon-name="utility:delete" 
-                        alternative-text="Delete All Logs" 
-                        title="Delete All Logs" 
-                        variant="brand"
-                        onclick={deleteLogs}
-                        disabled={isLogsDataEmpty}>
-                    </lightning-button-icon>
-                </lightning-layout-item>
-                <lightning-layout-item padding="around-small" class="search-input">
-                    <lightning-input 
-                        type="text" 
-                        value={searchTerm}
-                        placeholder="search in logs"
-                        onkeydown={handleSearchKey}>
-                    </lightning-input>
-                </lightning-layout-item>
-                <lightning-layout-item class="search-button">
-                    <lightning-button-icon 
-                        icon-name="utility:search" 
-                        alternative-text="Search" 
-                        title="Search"
-                        variant="brand"
-                        onclick={handleSearch}>
-                    </lightning-button-icon>
+                <lightning-layout-item size="1" padding="around-small" class="header-block">
+                    <div class="slds-clearfix">
+                        <lightning-button-menu onselect={handleSettingSlect} class="slds-float_right" menu-alignment="right" variant="border-filled" icon-name="utility:settings">
+                            <lightning-menu-item value="RSSTSS" label="Deploy RSS and TSS"></lightning-menu-item>
+                            <lightning-menu-item value="DebugLevel" label="Edit Debug Level"></lightning-menu-item>
+                        </lightning-button-menu>
+                    </div>
                 </lightning-layout-item>
             </lightning-layout>
         </div>
