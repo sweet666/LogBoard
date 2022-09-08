@@ -197,6 +197,16 @@ public class LogBoardController {
         return gen.getAsString();
     }
 
+    @AuraEnabled(cacheable=false)
+    public static List<MetadataHelper.UpsertResult> upsertRSSTSS() {
+        List<MetadataHelper.UpsertResult> results = new  List<MetadataHelper.UpsertResult>();
+
+        results.addAll(MetadataUtility.createRemoteSiteSetting());
+        results.addAll(MetadataUtility.createTrustedSiteSetting());
+
+        return results;
+    }
+
     public class TraceFlagResponse {
         public List<TraceFlagRecord> records;
     }

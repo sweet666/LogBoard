@@ -6,6 +6,7 @@ import stopTraceFlag from '@salesforce/apex/LogBoardController.stopTraceFlag';
 import getDebugLogs from '@salesforce/apex/LogBoardController.getDebugLogs';
 import deleteDebugLogs from '@salesforce/apex/LogBoardController.deleteDebugLogs';
 import getLogBodyCalloutParams from '@salesforce/apex/LogBoardController.getLogBodyCalloutParams';
+import upsertRSSTSS from '@salesforce/apex/LogBoardController.upsertRSSTSS';
 
 export default class LogBoard extends LightningElement {
 
@@ -322,5 +323,38 @@ export default class LogBoard extends LightningElement {
         if (event.keyCode === 13) {
             this.handleSearch();
         }
+    }
+
+    handleSettingSlect(event) {
+        const selectedItem = event.detail.value;
+        if (selectedItem === 'RSSTSS') {
+            this.deployRSSTSS();
+        } else if (selectedItem === 'DebugLevel') {
+            this.editDebugLevel();
+        }
+    }
+
+    deployRSSTSS() {
+        this.isLoading = true;
+        upsertRSSTSS().then(result => {
+            result.forEach(function (res) {
+                let title = res.fullName === 'selfRSS' ? 'Remote Site Setting' : 'Trusted Site Setting';
+                if (res.success) {
+                    title = res.created ? title + ' has been deployed' : title + ' is already deployed';
+                    this.showToast('Success', title, 'success');
+                } else {
+                    this.showToast(title + ': Error', JSON.stringify(res.errors), 'error');
+                }
+            }, this);
+            this.isLoading = false;
+        }).catch(error => {
+            this.isLoading = false;
+            this.showToast('', error.body.message, 'error');
+        });
+    }
+
+    editDebugLevel() {
+        const url = window.location.origin + '/udd/DebugLevel/editDebugLevel.apexp?traceflag_id=' + this.traceFlagId;
+        window.open(url, "_blank");
     }
 }
