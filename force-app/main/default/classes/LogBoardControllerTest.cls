@@ -4,6 +4,7 @@ private class LogBoardControllerTest {
     @isTest
     private static void getDebugLogsTest() {
         List<LogBoardController.Log> logs = LogBoardController.getDebugLogs();
+        System.assertNotEquals(null, logs);
     }
 
     @isTest
