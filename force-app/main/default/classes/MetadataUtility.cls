@@ -16,12 +16,7 @@ public class MetadataUtility {
 
         MetadataHelper.MetadataPort service = createService();
 
-        if (!Test.isRunningTest()) {
-            return service.upsertMetadata(allMetadataList);
-        } else {
-            return new List<MetadataHelper.UpsertResult>();
-        }
-        
+        return service.upsertMetadata(allMetadataList);   
     }
 
     public static List<MetadataHelper.UpsertResult> createTrustedSiteSetting() {
@@ -41,11 +36,7 @@ public class MetadataUtility {
 
         MetadataHelper.MetadataPort service = createService();
 
-        if (!Test.isRunningTest()) {
-            return service.upsertMetadata(allMetadataList);
-        } else {
-            return new List<MetadataHelper.UpsertResult>();
-        } 
+        return service.upsertMetadata(allMetadataList);
     }
 
     private static MetadataHelper.MetadataPort createService() { 
