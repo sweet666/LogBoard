@@ -10,6 +10,6 @@ public class MetadataHelperMock implements WebServiceMock {
         result.success = true;
         resultList.add(result);
         responseElement.result = resultList;
-        response.put('responseElement', responseElement); 
+        response.put('response_x', responseElement); 
     }
 }
