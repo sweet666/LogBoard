@@ -12,4 +12,10 @@ public class Utility {
             return UserInfo.getUserId();
         }
     }
+
+    public static void createLogBoardSettings() {
+        Log_Board_Settings__c setting = new Log_Board_Settings__c();
+        setting.Log_Filter__c = 'Operation != \'/apex/lgb__sessionidpage\' AND LogLength > 1800';
+        insert setting;
+    }
 }

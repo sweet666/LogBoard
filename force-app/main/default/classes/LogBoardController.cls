@@ -87,17 +87,20 @@ public class LogBoardController {
     }
 
     @AuraEnabled(cacheable=false)
-    public static List<Log> getDebugLogs() {
+    public static List<Log> getDebugLogs(String filter) {
         List<Log> logWrappers = new List<Log>();
         Set<Id> userIds = new Set<Id>();
 
-        List<ApexLog> logs = [
-            SELECT Id, StartTime, Status, Operation, LogUserId, LogLength
-            FROM ApexLog 
-            WHERE Operation != '/apex/lgb__sessionidpage'
-            ORDER BY StartTime DESC
-            LIMIT 100
-        ];
+        String query = 'SELECT Id, StartTime, Status, Operation, LogUserId, LogLength' +
+            ' FROM ApexLog';
+        if (!String.isEmpty(filter)) {
+            query += ' WHERE ' + filter;
+        }
+        query += ' ORDER BY StartTime DESC LIMIT 100';
+
+        System.debug(query);
+
+        List<ApexLog> logs = (List<ApexLog>)Database.query(query);
 
         for (ApexLog log : logs) {
             userIds.add(log.LogUserId);
@@ -124,6 +127,18 @@ public class LogBoardController {
         }
 
         return logWrappers;
+    }
+
+    @AuraEnabled(cacheable=false)
+    public static String getLogFilter() {
+        String filter = '';
+
+        Log_Board_Settings__c setting = Log_Board_Settings__c.getInstance();
+        if (setting != null && setting.Log_Filter__c != null) {
+            filter = setting.Log_Filter__c;
+        }
+
+        return filter;
     }
 
     @AuraEnabled(cacheable=false)

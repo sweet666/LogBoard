@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Log_Filter__c</fullName>
+    <description>String value of WHERE clause for ApexLog SOQL query.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>String value of WHERE clause for ApexLog SOQL query.</inlineHelpText>
+    <label>Log Filter</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>TextArea</type>
+</CustomField>
