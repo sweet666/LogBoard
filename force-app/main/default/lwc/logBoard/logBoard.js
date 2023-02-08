@@ -7,6 +7,7 @@ import getDebugLogs from '@salesforce/apex/LogBoardController.getDebugLogs';
 import deleteDebugLogs from '@salesforce/apex/LogBoardController.deleteDebugLogs';
 import getLogBodyCalloutParams from '@salesforce/apex/LogBoardController.getLogBodyCalloutParams';
 import upsertRSSTSS from '@salesforce/apex/LogBoardController.upsertRSSTSS';
+import getLogFilter from '@salesforce/apex/LogBoardController.getLogFilter';
 
 export default class LogBoard extends LightningElement {
 
@@ -21,6 +22,7 @@ export default class LogBoard extends LightningElement {
     @track isViewLog = false;
     @track showSearchResults = false;
     searchTerm = '';
+    logFilter = '';
     logsData = [];
     searchData = [];
     auth;
@@ -55,7 +57,7 @@ export default class LogBoard extends LightningElement {
     
     connectedCallback() {
         this.initTraceFlag();
-        this.getLogs();
+        this.getFilterAndLogs();
         this.getLogBodyCalloutParams();
 
         window.addEventListener("keydown", (event) => {
@@ -70,10 +72,23 @@ export default class LogBoard extends LightningElement {
         }, true);
     }
 
+    getFilterAndLogs() {
+        this.isLoading = true;
+        getLogFilter({})
+            .then(result => {
+                this.logFilter = result;
+                this.getLogs();
+            })
+            .catch(error => {
+                this.isLoading = false;
+                this.showToast('', error.body.message, 'error');
+            });
+    }
+
 
     getLogs() {
         this.isLoading = true;
-        getDebugLogs({})
+        getDebugLogs({filter: this.logFilter})
             .then(result => {
                 if (result) {
                     this.logsData = result;
