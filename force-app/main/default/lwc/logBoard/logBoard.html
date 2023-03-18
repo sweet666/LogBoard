@@ -89,6 +89,7 @@
                         <lightning-button-menu onselect={handleSettingSlect} class="slds-float_right" menu-alignment="right" variant="border-filled" icon-name="utility:settings">
                             <lightning-menu-item value="RSSTSS" label="Deploy RSS and TSS"></lightning-menu-item>
                             <lightning-menu-item value="DebugLevel" label="Edit Debug Level"></lightning-menu-item>
+                            <lightning-menu-item value="Filter" label="Edit Log Filter"></lightning-menu-item>
                         </lightning-button-menu>
                     </div>
                 </lightning-layout-item>
@@ -113,6 +114,14 @@
                 onclose={closeSearchResults}
                 onfulllog={handleFullLog}>
             </c-log-search-result>
+        </template>
+
+        <template if:true={isEditFilter}>
+            <c-edit-log-filter
+                log-filter={logFilter}
+                onclose={closeEditFilter}
+                onsave={handleSaveEditFilter}>
+            </c-edit-log-filter>
         </template>
     </div>
 

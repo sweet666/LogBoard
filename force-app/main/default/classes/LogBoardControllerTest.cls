@@ -48,4 +48,36 @@ private class LogBoardControllerTest {
         System.assertNotEquals(null, trace.Id);
     }
 
+    @isTest
+    private static void saveLogFilterTest() {
+        Test.startTest();
+        LogBoardController.Response resp = LogBoardController.saveLogFilter(
+            Utility.DEFAULT_FILTER
+        );
+        Test.stopTest();
+
+        System.assert(resp.isSuccess);
+        System.assert(Log_Board_Settings__c.getInstance().Log_Filter__c == Utility.DEFAULT_FILTER);
+    }
+
+    @isTest
+    private static void saveLogFilterEmptyTest() {
+        Test.startTest();
+        LogBoardController.Response resp = LogBoardController.saveLogFilter('');
+        Test.stopTest();
+
+        System.assert(resp.isSuccess);
+        System.assert(Log_Board_Settings__c.getInstance().Log_Filter__c == null);
+    }
+
+    @isTest
+    private static void saveLogFilterNegativeTest() {
+        Test.startTest();
+        LogBoardController.Response resp = LogBoardController.saveLogFilter('invalid');
+        Test.stopTest();
+
+        System.assert(!resp.isSuccess);
+        System.assert(resp.error != null);
+    }
+
 }

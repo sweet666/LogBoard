@@ -98,8 +98,6 @@ public class LogBoardController {
         }
         query += ' ORDER BY StartTime DESC LIMIT 100';
 
-        System.debug(query);
-
         List<ApexLog> logs = (List<ApexLog>)Database.query(query);
 
         for (ApexLog log : logs) {
@@ -148,6 +146,33 @@ public class LogBoardController {
             request.setEndpoint(ORG_URL + LOG_QUERY + al.Id);
             HttpResponse response = request.send();
         }
+    }
+
+    @AuraEnabled(cacheable=false)
+    public static Response saveLogFilter(String filter) {
+        Response response = new Response();
+        response.isSuccess = true;
+
+        if (String.isNotEmpty(filter)) {
+            try {
+                Database.query('SELECT Id FROM ApexLog WHERE ' + filter + ' LIMIT 1');
+            }
+            catch(QueryException ex) {
+                response.isSuccess = false;
+                response.error = ex.getMessage();
+                return response;
+            }
+        }
+
+        Log_Board_Settings__c setting = Log_Board_Settings__c.getInstance();
+        if (setting == null) {
+            setting = new Log_Board_Settings__c();
+        }
+
+        setting.Log_Filter__c = filter;
+        upsert setting;
+
+        return response;
     }
 
     @TestVisible
@@ -253,4 +278,8 @@ public class LogBoardController {
         @AuraEnabled public String authorization;
     }
 
+    public class Response {
+        @AuraEnabled public Boolean isSuccess;
+        @AuraEnabled public String error;
+    }
 }
