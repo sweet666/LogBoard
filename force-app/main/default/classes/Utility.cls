@@ -17,6 +17,7 @@ public class Utility {
 
     public static void createLogBoardSettings() {
         Log_Board_Settings__c setting = new Log_Board_Settings__c();
+        setting.SetupOwnerId = UserInfo.getOrganizationId();
         setting.Log_Filter__c = DEFAULT_FILTER;
         insert setting;
     }

@@ -6,8 +6,8 @@ private class PostInstallClassTest {
         PostInstall postInstall = new PostInstall();
         Test.testInstall(postinstall, null);
 
-        System.assert(Log_Board_Settings__c.getInstance() != null);
-        System.assert(Log_Board_Settings__c.getInstance().Log_Filter__c != null);
+        System.assert(Log_Board_Settings__c.getOrgDefaults() != null);
+        System.assert(Log_Board_Settings__c.getOrgDefaults().Log_Filter__c != null);
     }
     
 }

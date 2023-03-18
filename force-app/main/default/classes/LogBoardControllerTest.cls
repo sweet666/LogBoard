@@ -57,7 +57,7 @@ private class LogBoardControllerTest {
         Test.stopTest();
 
         System.assert(resp.isSuccess);
-        System.assert(Log_Board_Settings__c.getInstance().Log_Filter__c == Utility.DEFAULT_FILTER);
+        System.assert(Log_Board_Settings__c.getOrgDefaults().Log_Filter__c == Utility.DEFAULT_FILTER);
     }
 
     @isTest
@@ -67,7 +67,7 @@ private class LogBoardControllerTest {
         Test.stopTest();
 
         System.assert(resp.isSuccess);
-        System.assert(Log_Board_Settings__c.getInstance().Log_Filter__c == null);
+        System.assert(Log_Board_Settings__c.getOrgDefaults().Log_Filter__c == null);
     }
 
     @isTest

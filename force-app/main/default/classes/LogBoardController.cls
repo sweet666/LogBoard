@@ -131,7 +131,7 @@ public class LogBoardController {
     public static String getLogFilter() {
         String filter = '';
 
-        Log_Board_Settings__c setting = Log_Board_Settings__c.getInstance();
+        Log_Board_Settings__c setting = Log_Board_Settings__c.getOrgDefaults();
         if (setting != null && setting.Log_Filter__c != null) {
             filter = setting.Log_Filter__c;
         }
@@ -164,9 +164,11 @@ public class LogBoardController {
             }
         }
 
-        Log_Board_Settings__c setting = Log_Board_Settings__c.getInstance();
+        Log_Board_Settings__c setting = Log_Board_Settings__c.getOrgDefaults();
         if (setting == null) {
-            setting = new Log_Board_Settings__c();
+            setting = new Log_Board_Settings__c(
+                SetupOwnerId = UserInfo.getOrganizationId()
+            );
         }
 
         setting.Log_Filter__c = filter;

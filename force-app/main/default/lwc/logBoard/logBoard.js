@@ -70,6 +70,9 @@ export default class LogBoard extends LightningElement {
                 if (this.showSearchResults) {
                     this.closeSearchResults();
                 }
+                if (this.isEditFilter) {
+                    this.closeEditFilter();
+                }
             }
         }, true);
     }
