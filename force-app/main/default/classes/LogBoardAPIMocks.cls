@@ -5,7 +5,7 @@ public class LogBoardAPIMocks {
             HttpResponse res = new HttpResponse();
 
             LogBoardController.TraceFlagRecord rec = new LogBoardController.TraceFlagRecord();
-            rec.Id = '000000000000000AAA';
+            rec.Id = LogBoardController.generateUUID();
             rec.ExpirationDate = Datetime.now().addMinutes(10);
 
             LogBoardController.TraceFlagResponse body = new LogBoardController.TraceFlagResponse();

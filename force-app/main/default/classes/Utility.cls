@@ -1,4 +1,6 @@
-public class Utility {
+public with sharing class Utility {
+    public static final String DEFAULT_FILTER = 'Operation != \'/apex/lgb__sessionidpage\' AND LogLength > 1800';
+
     private static final  String SESSION_ID_START = 'SESSION_ID_START';
     private static final String SESSION_ID_END = 'SESSION_ID_END';
 
@@ -13,9 +15,12 @@ public class Utility {
         }
     }
 
+    // CRUD check is not needed for custom setting
+    @SuppressWarnings('PMD.ApexCRUDViolation')
     public static void createLogBoardSettings() {
         Log_Board_Settings__c setting = new Log_Board_Settings__c();
-        setting.Log_Filter__c = 'Operation != \'/apex/lgb__sessionidpage\' AND LogLength > 1800';
+        setting.SetupOwnerId = UserInfo.getOrganizationId();
+        setting.Log_Filter__c = DEFAULT_FILTER;
         insert setting;
     }
 }

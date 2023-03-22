@@ -8,6 +8,7 @@ import deleteDebugLogs from '@salesforce/apex/LogBoardController.deleteDebugLogs
 import getLogBodyCalloutParams from '@salesforce/apex/LogBoardController.getLogBodyCalloutParams';
 import upsertRSSTSS from '@salesforce/apex/LogBoardController.upsertRSSTSS';
 import getLogFilter from '@salesforce/apex/LogBoardController.getLogFilter';
+import saveLogFilter from '@salesforce/apex/LogBoardController.saveLogFilter';
 
 export default class LogBoard extends LightningElement {
 
@@ -21,6 +22,7 @@ export default class LogBoard extends LightningElement {
     @track traceFlagExpirationMS = 0;
     @track isViewLog = false;
     @track showSearchResults = false;
+    @track isEditFilter = false;
     searchTerm = '';
     logFilter = '';
     logsData = [];
@@ -67,6 +69,9 @@ export default class LogBoard extends LightningElement {
                 }
                 if (this.showSearchResults) {
                     this.closeSearchResults();
+                }
+                if (this.isEditFilter) {
+                    this.closeEditFilter();
                 }
             }
         }, true);
@@ -181,9 +186,13 @@ export default class LogBoard extends LightningElement {
         stopTraceFlag({
             traceId : this.traceFlagId
         }).then(result => {
-            this.isDebugActive = false;
-            this.traceFlagExpirationMS = 0;
-            clearInterval(this.timeIntervalInstance);
+            if (result.isSuccess) {
+                this.isDebugActive = false;
+                this.traceFlagExpirationMS = 0;
+                clearInterval(this.timeIntervalInstance);
+            } else {
+                this.showToast('', result.error, 'error');
+            }
             this.isLoading = false;
         })
         .catch(error => {
@@ -357,6 +366,8 @@ export default class LogBoard extends LightningElement {
             this.deployRSSTSS();
         } else if (selectedItem === 'DebugLevel') {
             this.editDebugLevel();
+        } else if (selectedItem === 'Filter') {
+            this.isEditFilter = true;
         }
     }
 
@@ -382,5 +393,31 @@ export default class LogBoard extends LightningElement {
     editDebugLevel() {
         const url = window.location.origin + '/udd/DebugLevel/editDebugLevel.apexp?traceflag_id=' + this.traceFlagId;
         window.open(url, "_blank");
+    }
+
+    closeEditFilter() {
+        this.isEditFilter = false;
+    }
+
+    handleSaveEditFilter(event) {
+        let filter = event.detail;
+        this.isLoading = true;
+
+        saveLogFilter({filter: filter})
+            .then(result => {
+                if (result.isSuccess) {
+                    this.isEditFilter = false;
+                    this.showToast('Success', 'Filter has been saved', 'success');
+                    this.logFilter = filter;
+                    this.refreshTable();
+                } else {
+                    this.isLoading = false;
+                    this.showToast('Invalid Filter', result.error, 'error');
+                }
+            })
+            .catch(error => {
+                this.isLoading = false;
+                this.showToast('', error.body.message, 'error');
+            });
     }
 }

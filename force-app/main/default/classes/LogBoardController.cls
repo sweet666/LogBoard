@@ -1,4 +1,4 @@
-public class LogBoardController {
+public with sharing class LogBoardController {
 
     private static final String ORG_URL = URL.getSalesforceBaseUrl().toExternalForm();
     private static final String TOOLING_API_URI = '/services/data/v47.0/tooling';
@@ -62,7 +62,10 @@ public class LogBoardController {
     }
 
     @AuraEnabled(cacheable=false)
-    public static void stopTraceFlag(String traceId) {
+    public static Response stopTraceFlag(String traceId) {
+        Response result = new Response();
+        result.isSuccess = true;
+
         String endDate = System.now().addSeconds(2).format(TRACE_DATE_FORMAT);
         String traceRecordBody = getTraceRecordBody(endDate);
         String traceRecordPath = String.format(TRACE_UPDATE_QUERY, new List<String> {traceId});
@@ -73,8 +76,11 @@ public class LogBoardController {
         HttpResponse response = request.send();
 
         if (response.getStatusCode() < 200 && response.getStatusCode() >= 300) {
-            throw new AuraHandledException(response.getBody());
+            result.isSuccess = false;
+            result.error = response.getBody();
         }
+
+        return result;
     }
 
     @AuraEnabled(cacheable=false)
@@ -98,9 +104,7 @@ public class LogBoardController {
         }
         query += ' ORDER BY StartTime DESC LIMIT 100';
 
-        System.debug(query);
-
-        List<ApexLog> logs = (List<ApexLog>)Database.query(query);
+        List<ApexLog> logs = (List<ApexLog>)Database.query(String.escapeSingleQuotes(query));
 
         for (ApexLog log : logs) {
             userIds.add(log.LogUserId);
@@ -133,7 +137,7 @@ public class LogBoardController {
     public static String getLogFilter() {
         String filter = '';
 
-        Log_Board_Settings__c setting = Log_Board_Settings__c.getInstance();
+        Log_Board_Settings__c setting = Log_Board_Settings__c.getOrgDefaults();
         if (setting != null && setting.Log_Filter__c != null) {
             filter = setting.Log_Filter__c;
         }
@@ -141,6 +145,8 @@ public class LogBoardController {
         return filter;
     }
 
+    // FLS check is not needed for ApexLog object
+    @SuppressWarnings('PMD.ApexCRUDViolation')
     @AuraEnabled(cacheable=false)
     public static void deleteDebugLogs() {
         for(ApexLog al: [SELECT Id FROM ApexLog LIMIT 100]){
@@ -148,6 +154,37 @@ public class LogBoardController {
             request.setEndpoint(ORG_URL + LOG_QUERY + al.Id);
             HttpResponse response = request.send();
         }
+    }
+
+    // CRUD check is not needed for custom setting
+    @SuppressWarnings('PMD.ApexCRUDViolation')
+    @AuraEnabled(cacheable=false)
+    public static Response saveLogFilter(String filter) {
+        Response response = new Response();
+        response.isSuccess = true;
+
+        if (String.isNotEmpty(filter)) {
+            try {
+                Database.query('SELECT Id FROM ApexLog WHERE ' + filter + ' LIMIT 1');
+            }
+            catch(QueryException ex) {
+                response.isSuccess = false;
+                response.error = ex.getMessage();
+                return response;
+            }
+        }
+
+        Log_Board_Settings__c setting = Log_Board_Settings__c.getOrgDefaults();
+        if (setting == null) {
+            setting = new Log_Board_Settings__c(
+                SetupOwnerId = UserInfo.getOrganizationId()
+            );
+        }
+
+        setting.Log_Filter__c = filter;
+        upsert setting;
+
+        return response;
     }
 
     @TestVisible
@@ -176,10 +213,15 @@ public class LogBoardController {
             
             newFlag.Id = newFlagResponse.id;
         } else {
-            newFlag.Id = '000000000000000AAA';
+            newFlag.Id = generateUUID();
         }
         
         return newFlag;
+    }
+
+    @TestVisible
+    private static String generateUUID() {
+        return '0'.repeat(15) + 'AAA';
     }
 
     private static Id getDevConsoleLevelId() {
@@ -189,7 +231,7 @@ public class LogBoardController {
         request.setEndpoint(ORG_URL + TOOLING_API_URI + '/query?q=' + query);
 
         if (Test.isRunningTest()) {
-            return '000000000000000AAB';
+            return generateUUID();
         }
 
         HttpResponse response = request.send();
@@ -226,6 +268,9 @@ public class LogBoardController {
         public List<TraceFlagRecord> records;
     }
 
+    // Uppercase names are required because it used
+    // to deserialize the response from Tooling API
+    @SuppressWarnings('PMD.VariableNamingConventions')
     public class TraceFlagRecord {
         @AuraEnabled public Id Id;
         @AuraEnabled public Datetime ExpirationDate;
@@ -235,6 +280,9 @@ public class LogBoardController {
         public List<DebugLevelRecord> records;
     }
 
+    // Uppercase name is required because it used
+    // to deserialize the response from Tooling API
+    @SuppressWarnings('PMD.VariableNamingConventions')
     public class DebugLevelRecord {
         @AuraEnabled public Id Id;
     }
@@ -253,4 +301,8 @@ public class LogBoardController {
         @AuraEnabled public String authorization;
     }
 
+    public class Response {
+        @AuraEnabled public Boolean isSuccess;
+        @AuraEnabled public String error;
+    }
 }
