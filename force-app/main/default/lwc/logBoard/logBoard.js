@@ -186,9 +186,13 @@ export default class LogBoard extends LightningElement {
         stopTraceFlag({
             traceId : this.traceFlagId
         }).then(result => {
-            this.isDebugActive = false;
-            this.traceFlagExpirationMS = 0;
-            clearInterval(this.timeIntervalInstance);
+            if (result.isSuccess) {
+                this.isDebugActive = false;
+                this.traceFlagExpirationMS = 0;
+                clearInterval(this.timeIntervalInstance);
+            } else {
+                this.showToast('', result.error, 'error');
+            }
             this.isLoading = false;
         })
         .catch(error => {
