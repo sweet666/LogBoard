@@ -104,7 +104,7 @@ public with sharing class LogBoardController {
         }
         query += ' ORDER BY StartTime DESC LIMIT 100';
 
-        List<ApexLog> logs = (List<ApexLog>)Database.query(String.escapeSingleQuotes(query));
+        List<ApexLog> logs = (List<ApexLog>)Database.query(query);
 
         for (ApexLog log : logs) {
             userIds.add(log.LogUserId);
