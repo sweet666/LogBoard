@@ -12,6 +12,10 @@ import saveLogFilter from '@salesforce/apex/LogBoardController.saveLogFilter';
 
 export default class LogBoard extends LightningElement {
 
+    FAILED_TO_FETCH_BODY_ERROR = 'Failed to fetch';
+    FAILED_TO_FETCH_BODY_HEADER = 'Failed to fetch log body';
+    FAILED_TO_FETCH_BODY_MESSAGE = 'Please click "Deploy RSS and TSS" button in setup menu to apply Remote Site and Trusted Site settings';
+
     debugDuration = '1';
     timeIntervalInstance;
     logBody = '';
@@ -334,8 +338,16 @@ export default class LogBoard extends LightningElement {
             this.isViewLog = true;
             this.isLoading = false;
         }).catch(error => {
+            let header = '';
+            let message = error.message;
+
+            if (message === this.FAILED_TO_FETCH_BODY_ERROR) {
+                header = this.FAILED_TO_FETCH_BODY_HEADER;
+                message = this.FAILED_TO_FETCH_BODY_MESSAGE;
+            }
+                
             this.isLoading = false;
-            this.showToast('', error.body.message, 'error');
+            this.showToast(header, message, 'error');
         });
     }
 
