@@ -1,8 +1,7 @@
-.link {
-    cursor: pointer;
-    color: rgb(0, 109, 204);
-}
-
 .slds-truncate.status {
     max-width: 660px;
+}
+
+.table-head.download-column {
+    width: 60px;
 }
