@@ -36,15 +36,16 @@
                             </template>
                         </lightning-layout-item>
                         <lightning-layout-item padding="around-small" class="duration">
-                            <lightning-radio-group 
-                                name="debugDuration"
-                                label="Debug Duration"
-                                options={debugDurationOptions}
-                                value={debugDuration}
-                                type="button"
-                                onchange={handleDurationValue}
-                                disabled={isDebugActive}>
-                            </lightning-radio-group>
+                            <p class="duration-label">Debug Duration</p>
+                            <div class="btn-toolbar" role="toolbar">
+                                <div class="btn-group mr-2" role="group" aria-label="First group">
+                                  <button type="button" class={duration1CSS} data-id="1" onclick={handleDurationValue}>1</button>
+                                  <button type="button" class={duration2CSS} data-id="2" onclick={handleDurationValue}>2</button>
+                                  <button type="button" class={duration3CSS} data-id="3" onclick={handleDurationValue}>3</button>
+                                  <button type="button" class={duration5CSS} data-id="5" onclick={handleDurationValue}>5</button>
+                                  <button type="button" class={duration10CSS} data-id="10" onclick={handleDurationValue}>10</button>
+                                </div>
+                            </div>
                         </lightning-layout-item>
                         <lightning-layout-item padding="around-small" class="header-block">
                             <lightning-button-icon 

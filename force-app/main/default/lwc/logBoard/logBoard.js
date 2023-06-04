@@ -16,9 +16,18 @@ export default class LogBoard extends LightningElement {
     FAILED_TO_FETCH_BODY_HEADER = 'Failed to fetch log body';
     FAILED_TO_FETCH_BODY_MESSAGE = 'Please click "Deploy RSS and TSS" button in setup menu to apply Remote Site and Trusted Site settings';
 
+    DURATION_DEFAULT_CLASS = 'btn btn-secondary';
+    DURATION_SELECTED_CLASS = 'btn btn-secondary btn-selected';
+
     debugDuration = '1';
     timeIntervalInstance;
     logBody = '';
+
+    duration1CSS = this.DURATION_SELECTED_CLASS;
+    duration2CSS = this.DURATION_DEFAULT_CLASS;
+    duration3CSS = this.DURATION_DEFAULT_CLASS;
+    duration5CSS = this.DURATION_DEFAULT_CLASS;
+    duration10CSS = this.DURATION_DEFAULT_CLASS;
     
     @track isLoading = false;
     @track isDebugActive = false;
@@ -33,17 +42,6 @@ export default class LogBoard extends LightningElement {
     searchData = [];
     auth;
     logBodyCalloutURL;
-    
-
-    get debugDurationOptions() {
-        return [
-            {label: '1', value: '1'},
-            {label: '2', value: '2'},
-            {label: '3', value: '3'},
-            {label: '5', value: '5'},
-            {label: '10', value: '10'},
-        ];
-    }
 
     get isLogsDataEmpty() {
         return this.logsData.length === 0;
@@ -52,6 +50,7 @@ export default class LogBoard extends LightningElement {
     get traceFlagExpiration() {
         if (this.traceFlagExpirationMS === 0) {
             this.isDebugActive = false;
+            this.setDurationButtonCSS();
             return '';
         }
 
@@ -117,6 +116,7 @@ export default class LogBoard extends LightningElement {
                     this.traceFlagId = result.Id;
                     if (result.ExpirationDate) {
                         this.isDebugActive = true;
+                        this.disableDurationButtons();
                         this.calculateExparationInMS(Date.parse(result.ExpirationDate));
                         this.startCountDown();
                     } 
@@ -134,6 +134,7 @@ export default class LogBoard extends LightningElement {
                 duration : parseInt(this.debugDuration, 10)
             }).then(result => {
                 this.isDebugActive = true;
+                this.disableDurationButtons();
                 this.calculateExparationInMS(Date.parse(result));
                 this.startCountDown();
                 this.isLoading = false;
@@ -142,6 +143,11 @@ export default class LogBoard extends LightningElement {
                 this.isLoading = false;
                 this.showToast('', error.body.message, 'error');
             });
+    }
+
+    disableDurationButtons() {
+        this.duration1CSS = this.duration2CSS = this.duration3CSS = 
+            this.duration5CSS = this.duration10CSS = 'btn btn-secondary btn-disabled';
     }
 
     calculateExparationInMS(exparationInMillisecs) {
@@ -164,7 +170,31 @@ export default class LogBoard extends LightningElement {
     }
 
     handleDurationValue(event) {
-        this.debugDuration = event.target.value;
+        this.debugDuration = event.target.dataset.id;
+        this.setDurationButtonCSS();
+    }
+
+    setDurationButtonCSS() {
+        this.duration1CSS = this.duration2CSS = this.duration3CSS = 
+            this.duration5CSS = this.duration10CSS = 'btn btn-secondary';
+
+        switch(this.debugDuration) {
+            case '1':
+                this.duration1CSS = this.DURATION_SELECTED_CLASS;
+                break;
+            case '2':
+                this.duration2CSS = this.DURATION_SELECTED_CLASS;
+                break;
+            case '3':
+                this.duration3CSS = this.DURATION_SELECTED_CLASS;
+                break;
+            case '5':
+                this.duration5CSS = this.DURATION_SELECTED_CLASS;
+                break;
+            case '10':
+                this.duration10CSS = this.DURATION_SELECTED_CLASS;
+                break;
+        }
     }
 
     refreshTable() {
@@ -192,6 +222,7 @@ export default class LogBoard extends LightningElement {
         }).then(result => {
             if (result.isSuccess) {
                 this.isDebugActive = false;
+                this.setDurationButtonCSS();
                 this.traceFlagExpirationMS = 0;
                 clearInterval(this.timeIntervalInstance);
             } else {
