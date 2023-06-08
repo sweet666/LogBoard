@@ -9,7 +9,7 @@
 
         <div class="head-container">
             <lightning-layout>
-                <lightning-layout-item size="11">
+                <lightning-layout-item size="9">
                     <lightning-layout>
                         <lightning-layout-item padding="around-small" class="header-block exparation">
                             <template if:true={isDebugActive}>
@@ -84,6 +84,16 @@
                             </lightning-button-icon>
                         </lightning-layout-item>
                     </lightning-layout>
+                </lightning-layout-item>
+                <lightning-layout-item size="2" padding="around-small" class="header-select-user">
+                    <lightning-combobox
+                        label="User"
+                        value={selectedUser}
+                        placeholder="User"
+                        options={userOptions}
+                        onchange={handleUserSelect}
+                        variant="label-hidden" >
+                    </lightning-combobox>
                 </lightning-layout-item>
                 <lightning-layout-item size="1" padding="around-small" class="header-block">
                     <div class="slds-clearfix">
