@@ -42,6 +42,14 @@ export default class LogBoard extends LightningElement {
     searchData = [];
     auth;
     logBodyCalloutURL;
+    selectedUser = 'current';
+
+    get userOptions() {
+        return [
+            { label: 'Current User', value: 'current' },
+            { label: 'Automated Process', value: 'automated' }
+        ];
+    }
 
     get isLogsDataEmpty() {
         return this.logsData.length === 0;
@@ -80,6 +88,11 @@ export default class LogBoard extends LightningElement {
         }, true);
     }
 
+    handleUserSelect(event) {
+        this.selectedUser = event.detail.value;
+        this.initTraceFlag();
+    }
+
     getFilterAndLogs() {
         this.isLoading = true;
         getLogFilter({})
@@ -110,16 +123,25 @@ export default class LogBoard extends LightningElement {
     }
 
     initTraceFlag() {
-        getActiveTraceFlag({})
-            .then(result => {
+        this.isLoading = true;
+        getActiveTraceFlag({
+                user : this.selectedUser
+            }).then(result => {
                 if (result) {
+                    this.isLoading = false;
                     this.traceFlagId = result.Id;
                     if (result.ExpirationDate) {
+                        clearInterval(this.timeIntervalInstance);
                         this.isDebugActive = true;
                         this.disableDurationButtons();
                         this.calculateExparationInMS(Date.parse(result.ExpirationDate));
                         this.startCountDown();
-                    } 
+                    } else {
+                        this.isDebugActive = false;
+                        this.setDurationButtonCSS();
+                        this.traceFlagExpirationMS = 0;
+                        clearInterval(this.timeIntervalInstance);
+                    }
                 }
             })
             .catch(error => {

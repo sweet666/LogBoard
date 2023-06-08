@@ -6,15 +6,18 @@ public with sharing class LogBoardController {
     private static final String TRACE_DATE_FORMAT = 'yyyy-MM-dd\'T\'HH:mm:ss.SSSXXX';
     private static final String LOG_BODY_QUERY = '/sobjects/ApexLog/{0}/Body/';
     private static final String LOG_QUERY = '/services/data/v44.0/sobjects/Apexlog/';
+    private static final String AUTOMATED_USER_ALIAS = 'autoproc';
     
-    @AuraEnabled(cacheable=true)
-    public static TraceFlagRecord getActiveTraceFlag() {
+    @AuraEnabled(cacheable=false)
+    public static TraceFlagRecord getActiveTraceFlag(String user) {
         Boolean isActive = false;
         TraceFlagRecord activeFlag;
 
+        String userId = getUserId(user);
+
         HttpHelper request = new HttpHelper('OAuth', 'GET');
         String query = 'SELECT Id, ExpirationDate, TracedEntityId FROM TraceFlag WHERE LogType = \'USER_DEBUG\' AND TracedEntityId =\'' +
-            UserInfo.getUserId() + '\'';
+            userId + '\'';
         query = query.replace(' ','+');
         request.setEndpoint(ORG_URL + TOOLING_API_URI + '/query?q=' + query);
         HttpResponse response = request.send();
@@ -30,7 +33,7 @@ public with sharing class LogBoardController {
                     }
                 }
             } else {
-                activeFlag = insertUserTraceFlag();
+                activeFlag = insertUserTraceFlag(userId);
                 isActive = false;
             }
         } else {
@@ -187,8 +190,20 @@ public with sharing class LogBoardController {
         return response;
     }
 
+    private static String getUserId(String user) {
+        String userId;
+
+        if (user == 'current') {
+            userId = UserInfo.getUserId();
+        } else {
+            userId = [SELECT Id FROM User WHERE Alias = :AUTOMATED_USER_ALIAS].Id;
+        }
+
+        return userId;
+    }
+
     @TestVisible
-    private static TraceFlagRecord insertUserTraceFlag() {
+    private static TraceFlagRecord insertUserTraceFlag(String userId) {
         Id levelId = getDevConsoleLevelId();
         
         JSONGenerator gen = JSON.createGenerator(true);
@@ -197,7 +212,7 @@ public with sharing class LogBoardController {
         gen.writeStringField('ExpirationDate', System.now().addSeconds(4).format(TRACE_DATE_FORMAT));
         gen.writeStringField('DebugLevelId', levelId);
         gen.writeStringField('LogType', 'USER_DEBUG');
-        gen.writeStringField('TracedEntityId', UserInfo.getUserId());
+        gen.writeStringField('TracedEntityId', userId);
         gen.writeEndObject();
 
         HttpHelper request = new HttpHelper('OAuth', 'POST');

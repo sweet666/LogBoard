@@ -12,7 +12,7 @@ private class LogBoardControllerTest {
         Test.setMock(HttpCalloutMock.class, new LogBoardAPIMocks.ActiveTraceFlagMock());
 
         Test.startTest();
-        LogBoardController.TraceFlagRecord activeTrace = LogBoardController.getActiveTraceFlag();
+        LogBoardController.TraceFlagRecord activeTrace = LogBoardController.getActiveTraceFlag('current');
         Test.stopTest();
 
         System.assertNotEquals(null, activeTrace.ExpirationDate, 'Expiration Date should be null');
@@ -53,7 +53,7 @@ private class LogBoardControllerTest {
 
     @isTest
     private static void insertUserTraceFlagTest() {
-        LogBoardController.TraceFlagRecord trace = LogBoardController.insertUserTraceFlag();
+        LogBoardController.TraceFlagRecord trace = LogBoardController.insertUserTraceFlag(LogBoardController.generateUUID());
         System.assertNotEquals(null, trace.Id, 'Trace flag Id can not be null');
     }
 

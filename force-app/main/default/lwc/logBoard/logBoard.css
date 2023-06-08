@@ -74,6 +74,11 @@
     color: white;
 }
 
+.header-select-user {
+    padding-top: 24px;
+    padding-left: 50px;
+}
+
 .header-block.exparation {
     text-align: center;
     width: 120px;
