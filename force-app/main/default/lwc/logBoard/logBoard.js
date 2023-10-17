@@ -300,7 +300,7 @@ export default class LogBoard extends LightningElement {
             ).then(text => {
                 resolve({id: log.id, body: text});
             }).catch(error => {
-                this.showToast('', error.body.message, 'error');
+                this.catchError(error);
                 reject(new Error('Error in logBodyPromise')); 
             });
             }));
@@ -310,6 +310,19 @@ export default class LogBoard extends LightningElement {
             this.buildSearchResults(results, searchTerm);
         });
 
+    }
+
+    catchError(error) {
+        let header = '';
+        let message = error.message;
+
+        if (message === this.FAILED_TO_FETCH_BODY_ERROR) {
+            header = this.FAILED_TO_FETCH_BODY_HEADER;
+            message = this.FAILED_TO_FETCH_BODY_MESSAGE;
+        }
+            
+        this.isLoading = false;
+        this.showToast(header, message, 'error');
     }
 
     buildSearchResults(results, searchTerm) {
@@ -391,16 +404,7 @@ export default class LogBoard extends LightningElement {
             this.isViewLog = true;
             this.isLoading = false;
         }).catch(error => {
-            let header = '';
-            let message = error.message;
-
-            if (message === this.FAILED_TO_FETCH_BODY_ERROR) {
-                header = this.FAILED_TO_FETCH_BODY_HEADER;
-                message = this.FAILED_TO_FETCH_BODY_MESSAGE;
-            }
-                
-            this.isLoading = false;
-            this.showToast(header, message, 'error');
+            this.catchError(error);
         });
     }
 
