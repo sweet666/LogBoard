@@ -140,15 +140,8 @@ public with sharing class LogBoardController {
     }
 
     @AuraEnabled(cacheable=false)
-    public static String getLogFilter() {
-        String filter = '';
-
-        Log_Board_Settings__c setting = Log_Board_Settings__c.getOrgDefaults();
-        if (setting != null && setting.Log_Filter__c != null) {
-            filter = setting.Log_Filter__c;
-        }
-
-        return filter;
+    public static Log_Board_Settings__c getSettings() {
+        return Log_Board_Settings__c.getOrgDefaults();
     }
 
     // FLS check is not needed for ApexLog object
@@ -180,6 +173,24 @@ public with sharing class LogBoardController {
             }
         }
 
+        Log_Board_Settings__c setting = getSetting();
+
+        setting.Log_Filter__c = filter;
+        upsert setting;
+
+        return response;
+    }
+
+    // CRUD check is not needed for custom setting
+    @SuppressWarnings('PMD.ApexCRUDViolation')
+    @AuraEnabled(cacheable=false)
+    public static void saveAutoRefreshSetting(Boolean isAutoRefresh) {
+        Log_Board_Settings__c setting = getSetting();
+        setting.Is_Autorefresh__c = isAutoRefresh;
+        upsert setting;
+    }
+
+    private static Log_Board_Settings__c getSetting() {
         Log_Board_Settings__c setting = Log_Board_Settings__c.getOrgDefaults();
         if (setting == null) {
             setting = new Log_Board_Settings__c(
@@ -187,10 +198,7 @@ public with sharing class LogBoardController {
             );
         }
 
-        setting.Log_Filter__c = filter;
-        upsert setting;
-
-        return response;
+        return setting;
     }
 
     private static String getUserId(String user) {

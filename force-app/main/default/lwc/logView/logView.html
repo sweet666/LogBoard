@@ -3,8 +3,11 @@
         <div class="slds-modal__container container">
             <header class="slds-modal__header header">
                 <lightning-layout>
-                    <lightning-layout-item size="11">
+                    <lightning-layout-item size="1">
                         <button class="slds-button slds-button_neutral" onclick={handleClose} title="Cancel">Close</button>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="10">
+                        <button class="slds-button slds-button_brand slds-m-left_large" onclick={handleDownload} title="Cancel">Download</button>
                     </lightning-layout-item>
                     <lightning-layout-item size="1" class="is-debug">
                         <lightning-input label="Debug Only" type="checkbox" checked={isDebugOnly} onchange={handleDebugOnly}>

@@ -6,6 +6,9 @@ export default class LogView extends LightningElement {
     formattedLogData = '';
     isDebugOnly = false;
 
+    @api
+    logId = '';
+
     @api 
     set logData(value) {
         if (value) {
@@ -59,5 +62,10 @@ export default class LogView extends LightningElement {
     handleClose() {
         const closeEvent = new CustomEvent('close');
         this.dispatchEvent(closeEvent);
+    }
+
+    handleDownload() {
+        let url = window.location.origin + '/servlet/servlet.FileDownload?file=' + this.logId;
+        window.open(url, "_blank");
     }
 }

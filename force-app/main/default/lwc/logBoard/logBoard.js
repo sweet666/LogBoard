@@ -7,8 +7,9 @@ import getDebugLogs from '@salesforce/apex/LogBoardController.getDebugLogs';
 import deleteDebugLogs from '@salesforce/apex/LogBoardController.deleteDebugLogs';
 import getLogBodyCalloutParams from '@salesforce/apex/LogBoardController.getLogBodyCalloutParams';
 import upsertRSSTSS from '@salesforce/apex/LogBoardController.upsertRSSTSS';
-import getLogFilter from '@salesforce/apex/LogBoardController.getLogFilter';
+import getSettings from '@salesforce/apex/LogBoardController.getSettings';
 import saveLogFilter from '@salesforce/apex/LogBoardController.saveLogFilter';
+import saveAutoRefreshSetting from '@salesforce/apex/LogBoardController.saveAutoRefreshSetting';
 
 export default class LogBoard extends LightningElement {
 
@@ -19,9 +20,14 @@ export default class LogBoard extends LightningElement {
     DURATION_DEFAULT_CLASS = 'btn btn-secondary';
     DURATION_SELECTED_CLASS = 'btn btn-secondary btn-selected';
 
+    POLLING_FREQUENCY = 3000;
+
     debugDuration = '1';
     timeIntervalInstance;
     logBody = '';
+    viewLogId = '';
+    isAutoRefresh = false;
+    isPolling = false;
 
     duration1CSS = this.DURATION_SELECTED_CLASS;
     duration2CSS = this.DURATION_DEFAULT_CLASS;
@@ -69,8 +75,7 @@ export default class LogBoard extends LightningElement {
     }
     
     connectedCallback() {
-        this.initTraceFlag();
-        this.getFilterAndLogs();
+        this.getSettings();
         this.getLogBodyCalloutParams();
 
         window.addEventListener("keydown", (event) => {
@@ -93,32 +98,69 @@ export default class LogBoard extends LightningElement {
         this.initTraceFlag();
     }
 
-    getFilterAndLogs() {
+    getSettings() {
         this.isLoading = true;
-        getLogFilter({})
+        getSettings({})
             .then(result => {
-                this.logFilter = result;
-                this.getLogs();
+                this.setSettings(result);
+                this.initTraceFlag();
             })
             .catch(error => {
                 this.isLoading = false;
-                this.showToast('', error.body.message, 'error');
+                this.showToast('', error.message, 'error');
             });
     }
 
+    setSettings(setting) {
+        if (!setting) {
+            return;
+        }
+        if (setting.LGB__Log_Filter__c) {
+            this.logFilter = setting.LGB__Log_Filter__c;
+        }
+        if (setting.LGB__Is_Autorefresh__c && setting.LGB__Is_Autorefresh__c === true) {
+            this.isAutoRefresh = true
+            let toggle = this.template.querySelector('lightning-input[data-id="autorefresh-toggle"]');
+            toggle.checked = true;
+        }
+    }
+
+    handleAutorefreshToggle() {
+        let newValue = this.template.querySelector('lightning-input[data-id="autorefresh-toggle"]').checked;
+        if (newValue != this.isAutoRefresh) {
+            saveAutoRefreshSetting({isAutoRefresh: newValue})
+            .then(result => {})
+            .catch(error => {
+                this.showToast('', error.message, 'error');
+            });
+        }
+        this.isAutoRefresh = newValue;
+
+        if (this.isAutoRefresh && this.isDebugActive && !this.isPolling) {
+            this.getLogs();
+        }
+    }
 
     getLogs() {
-        this.isLoading = true;
         getDebugLogs({filter: this.logFilter})
             .then(result => {
                 if (result) {
                     this.logsData = result;
                 }
                 this.isLoading = false;
+
+                if (this.isAutoRefresh && this.isDebugActive) {
+                    this.isPolling = true;
+                    setTimeout(() => {
+                        this.getLogs();
+                    }, this.POLLING_FREQUENCY);
+                } else {
+                    this.isPolling = false;
+                }
             })
             .catch(error => {
                 this.isLoading = false;
-                this.showToast('', error.body.message, 'error');
+                this.showToast('', error.message, 'error');
             });
     }
 
@@ -142,10 +184,11 @@ export default class LogBoard extends LightningElement {
                         this.traceFlagExpirationMS = 0;
                         clearInterval(this.timeIntervalInstance);
                     }
+                    this.getLogs();
                 }
             })
             .catch(error => {
-                this.showToast(error.body.message, 'Try to create a new User Trace Flag' , 'error');
+                this.showToast(error.message, 'Try to create a new User Trace Flag' , 'error');
             });
     }
 
@@ -160,10 +203,14 @@ export default class LogBoard extends LightningElement {
                 this.calculateExparationInMS(Date.parse(result));
                 this.startCountDown();
                 this.isLoading = false;
+
+                if (this.isAutoRefresh && !this.isPolling) {
+                    this.getLogs();
+                }
             })
             .catch(error => {
                 this.isLoading = false;
-                this.showToast('', error.body.message, 'error');
+                this.showToast('', error.message, 'error');
             });
     }
 
@@ -233,7 +280,7 @@ export default class LogBoard extends LightningElement {
             })
             .catch(error => {
                 this.isLoading = false;
-                this.showToast('', error.body.message, 'error');
+                this.showToast('', error.message, 'error');
             });
     }
 
@@ -254,7 +301,7 @@ export default class LogBoard extends LightningElement {
         })
         .catch(error => {
             this.isLoading = false;
-            this.showToast('', error.body.message, 'error');
+            this.showToast('', error.message, 'error');
         });
     }
 
@@ -271,7 +318,7 @@ export default class LogBoard extends LightningElement {
             this.logBodyCalloutURL = result.url;
         }).catch(error => {
             this.isLoading = false;
-            this.showToast('', error.body.message, 'error');
+            this.showToast('', error.message, 'error');
         });
     }
 
@@ -401,6 +448,7 @@ export default class LogBoard extends LightningElement {
             }
         ).then(text => {
             this.logBody = text;
+            this.viewLogId = logId;
             this.isViewLog = true;
             this.isLoading = false;
         }).catch(error => {
@@ -410,6 +458,7 @@ export default class LogBoard extends LightningElement {
 
     closeViewLog() {
         this.logBody = '';
+        this.viewLogId = '';
         this.isViewLog = false;
     }
 
@@ -455,7 +504,7 @@ export default class LogBoard extends LightningElement {
             this.isLoading = false;
         }).catch(error => {
             this.isLoading = false;
-            this.showToast('', error.body.message, 'error');
+            this.showToast('', error.message, 'error');
         });
     }
 
@@ -486,7 +535,7 @@ export default class LogBoard extends LightningElement {
             })
             .catch(error => {
                 this.isLoading = false;
-                this.showToast('', error.body.message, 'error');
+                this.showToast('', error.message, 'error');
             });
     }
 }
