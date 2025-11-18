@@ -35,7 +35,7 @@
                                 </lightning-button>
                             </template>
                         </lightning-layout-item>
-                        <lightning-layout-item padding="around-small" class="duration">
+                        <lightning-layout-item padding="around-small" class="no-top-padding">
                             <p class="duration-label">Debug Duration</p>
                             <div class="btn-toolbar" role="toolbar">
                                 <div class="btn-group mr-2" role="group" aria-label="First group">
@@ -49,15 +49,6 @@
                         </lightning-layout-item>
                         <lightning-layout-item padding="around-small" class="header-block">
                             <lightning-button-icon 
-                                icon-name="utility:refresh" 
-                                alternative-text="Refresh" 
-                                title="Refresh" 
-                                variant="brand"
-                                onclick={refreshTable}>
-                            </lightning-button-icon>
-                        </lightning-layout-item>
-                        <lightning-layout-item padding="around-small" class="header-block">
-                            <lightning-button-icon 
                                 icon-name="utility:delete" 
                                 alternative-text="Delete All Logs" 
                                 title="Delete All Logs" 
@@ -65,6 +56,27 @@
                                 onclick={deleteLogs}
                                 disabled={isLogsDataEmpty}>
                             </lightning-button-icon>
+                        </lightning-layout-item>
+                        <lightning-layout-item padding="around-small" class="header-block">
+                            <lightning-button-icon 
+                                icon-name="utility:refresh" 
+                                alternative-text="Refresh" 
+                                title="Refresh" 
+                                variant="brand"
+                                onclick={refreshTable}
+                                disabled={isAutoRefresh}>
+                            </lightning-button-icon>
+                        </lightning-layout-item>
+                        <lightning-layout-item padding="around-small" class="no-top-padding">
+                            <p class="autorefresh-label">Auto refresh</p>
+                            <lightning-input 
+                                data-id="autorefresh-toggle"
+                                type="toggle" 
+                                variant="label-hidden"
+                                message-toggle-active="" 
+                                message-toggle-inactive=""
+                                onchange={handleAutorefreshToggle}>
+                            </lightning-input>
                         </lightning-layout-item>
                         <lightning-layout-item padding="around-small" class="search-input">
                             <lightning-input 
@@ -115,6 +127,7 @@
         <template if:true={isViewLog}>
             <c-log-view
                 log-data={logBody}
+                log-id={viewLogId}
                 onclose={closeViewLog}>
             </c-log-view>
         </template>

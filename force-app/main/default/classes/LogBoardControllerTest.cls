@@ -68,8 +68,8 @@ private class LogBoardControllerTest {
         System.assert(resp.isSuccess, 'Response should be success');
         System.assert(Log_Board_Settings__c.getOrgDefaults().Log_Filter__c == Utility.DEFAULT_FILTER, 'Filter should have default value');
 
-        String filter = LogBoardController.getLogFilter();
-        System.assert(filter == Utility.DEFAULT_FILTER, 'Filter should have default value');
+        Log_Board_Settings__c settings = LogBoardController.getSettings();
+        System.assert(settings.Log_Filter__c == Utility.DEFAULT_FILTER, 'Filter should have default value');
     }
 
     @isTest
@@ -90,5 +90,14 @@ private class LogBoardControllerTest {
 
         System.assert(!resp.isSuccess, 'Response should have non-success status');
         System.assert(resp.error != null, 'Error message should not be empty');
+    }
+
+    @isTest
+    private static void saveAutoRefreshSettingTest() {
+        Test.startTest();
+        LogBoardController.saveAutoRefreshSetting(true);
+        Test.stopTest();
+
+        Assert.isTrue(Log_Board_Settings__c.getOrgDefaults().Is_Autorefresh__c, 'Is Autorefresh should be checked');
     }
 }

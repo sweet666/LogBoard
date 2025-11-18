@@ -1,5 +1,7 @@
 @IsTest
 private class MetadataHelperTest {
+    // method is used to cover WSDL class. No asserts needed
+    @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveAsserts')
     @IsTest
     private static void coverTest() {
         new MetadataHelper.RemoteSiteSetting();

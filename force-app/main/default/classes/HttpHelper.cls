@@ -4,6 +4,9 @@ public class HttpHelper {
     private HttpRequest request;
     private static final String SESSION_ID = Utility.getSessionIdFromVFPage();
 
+    // Session Id auth type is used instead of Named Credentials
+    // to avoid create Named Credentials package post-install step
+    @SuppressWarnings('PMD.ApexSuggestUsingNamedCred')
     public HttpHelper(String authType, String method) {
         http = new Http();
         request = new HttpRequest();

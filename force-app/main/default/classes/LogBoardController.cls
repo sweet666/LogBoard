@@ -95,6 +95,7 @@ public with sharing class LogBoardController {
         return params;
     }
 
+    @SuppressWarnings('PMD.ApexSOQLInjection')
     @AuraEnabled(cacheable=false)
     public static List<Log> getDebugLogs(String filter) {
         List<Log> logWrappers = new List<Log>();
@@ -107,6 +108,8 @@ public with sharing class LogBoardController {
         }
         query += ' ORDER BY StartTime DESC LIMIT 100';
 
+        // query String may contain a single quioted variables in WHERE
+        // clasue so escapeSingleQuotes method cannot be applied
         List<ApexLog> logs = (List<ApexLog>)Database.query(query);
 
         for (ApexLog log : logs) {
@@ -137,15 +140,8 @@ public with sharing class LogBoardController {
     }
 
     @AuraEnabled(cacheable=false)
-    public static String getLogFilter() {
-        String filter = '';
-
-        Log_Board_Settings__c setting = Log_Board_Settings__c.getOrgDefaults();
-        if (setting != null && setting.Log_Filter__c != null) {
-            filter = setting.Log_Filter__c;
-        }
-
-        return filter;
+    public static Log_Board_Settings__c getSettings() {
+        return Log_Board_Settings__c.getOrgDefaults();
     }
 
     // FLS check is not needed for ApexLog object
@@ -177,6 +173,24 @@ public with sharing class LogBoardController {
             }
         }
 
+        Log_Board_Settings__c setting = getSetting();
+
+        setting.Log_Filter__c = filter;
+        upsert setting;
+
+        return response;
+    }
+
+    // CRUD check is not needed for custom setting
+    @SuppressWarnings('PMD.ApexCRUDViolation')
+    @AuraEnabled(cacheable=false)
+    public static void saveAutoRefreshSetting(Boolean isAutoRefresh) {
+        Log_Board_Settings__c setting = getSetting();
+        setting.Is_Autorefresh__c = isAutoRefresh;
+        upsert setting;
+    }
+
+    private static Log_Board_Settings__c getSetting() {
         Log_Board_Settings__c setting = Log_Board_Settings__c.getOrgDefaults();
         if (setting == null) {
             setting = new Log_Board_Settings__c(
@@ -184,10 +198,7 @@ public with sharing class LogBoardController {
             );
         }
 
-        setting.Log_Filter__c = filter;
-        upsert setting;
-
-        return response;
+        return setting;
     }
 
     private static String getUserId(String user) {
@@ -285,7 +296,7 @@ public with sharing class LogBoardController {
 
     // Uppercase names are required because it used
     // to deserialize the response from Tooling API
-    @SuppressWarnings('PMD.VariableNamingConventions')
+    @SuppressWarnings('PMD.VariableNamingConventions, PMD.FieldNamingConventions')
     public class TraceFlagRecord {
         @AuraEnabled public Id Id;
         @AuraEnabled public Datetime ExpirationDate;
@@ -297,7 +308,7 @@ public with sharing class LogBoardController {
 
     // Uppercase name is required because it used
     // to deserialize the response from Tooling API
-    @SuppressWarnings('PMD.VariableNamingConventions')
+    @SuppressWarnings('PMD.VariableNamingConventions, PMD.FieldNamingConventions')
     public class DebugLevelRecord {
         @AuraEnabled public Id Id;
     }
