@@ -324,7 +324,6 @@ export default class LogBoard extends LightningElement {
 
     handleSearch() {
         let searchTerm = this.template.querySelector('lightning-input[data-id="search-input"]').value;
-        console.log()
         if (!searchTerm || !this.logsData.length) {
             return;
         }
