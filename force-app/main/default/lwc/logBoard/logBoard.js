@@ -323,7 +323,7 @@ export default class LogBoard extends LightningElement {
     }
 
     handleSearch() {
-        let searchTerm = this.template.querySelector("lightning-input").value;
+        let searchTerm = this.template.querySelector('lightning-input[data-id="search-input"]').value;
         if (!searchTerm || !this.logsData.length) {
             return;
         }
@@ -408,7 +408,7 @@ export default class LogBoard extends LightningElement {
         this.searchData = [];
         this.showSearchResults = false;
         this.searchTerm = '';
-        this.template.querySelector("lightning-input").value = '';
+        this.template.querySelector('lightning-input[data-id="search-input"]').value = '';
     }
 
     handleFullLog(event) {
