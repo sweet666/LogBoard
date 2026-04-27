@@ -71,9 +71,6 @@ Each row has two action buttons: **View** (opens the log inline) and **Download*
 
 ### Viewing a log
 
-<img width="1512" height="606" alt="Screenshot 2026-04-27 at 14 00 31" src="https://github.com/user-attachments/assets/35ca2892-da91-470b-8b71-557ddbcef23d" />
-
-
 Clicking **View** on any row opens the **Log View** panel. Log lines are colour-coded for fast scanning:
 
 | Colour | Log event types |
@@ -83,6 +80,8 @@ Clicking **View** on any row opens the **Log View** panel. Log lines are colour-
 | 🩵 Cyan | `SOQL_EXECUTE_*` |
 | 🟢 Green | `USER_DEBUG` |
 | 🔴 Red | `EXCEPTION_THROWN`, `FATAL_ERROR` |
+
+<img width="1512" height="606" alt="Screenshot 2026-04-27 at 14 00 31" src="https://github.com/user-attachments/assets/35ca2892-da91-470b-8b71-557ddbcef23d" />
 
 The **Debug only** toggle filters the view to show only `USER_DEBUG` lines. If no debug lines exist, the panel shows "Nothing to show".
 
