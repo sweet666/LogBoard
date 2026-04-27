@@ -29,6 +29,20 @@ node_modules/
 # Eslint cache
 .eslintcache
 
+# npm lock file (not committed in this project)
+package-lock.json
+
+# Environment / secrets
+.env
+.env.*
+
+# JetBrains IDEs
+.idea/
+
+# Vim swap files
+*.swp
+*.swo
+
 # MacOS system files
 .DS_Store
 

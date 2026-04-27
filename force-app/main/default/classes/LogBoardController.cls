@@ -95,6 +95,8 @@ public with sharing class LogBoardController {
         return params;
     }
 
+    // Query String may contain a single quoted variables in WHERE
+    // clause so escapeSingleQuotes method cannot be applied
     @SuppressWarnings('PMD.ApexSOQLInjection')
     @AuraEnabled(cacheable=false)
     public static List<Log> getDebugLogs(String filter) {
@@ -108,9 +110,7 @@ public with sharing class LogBoardController {
         }
         query += ' ORDER BY StartTime DESC LIMIT 100';
 
-        // query String may contain a single quioted variables in WHERE
-        // clasue so escapeSingleQuotes method cannot be applied
-        List<ApexLog> logs = (List<ApexLog>)Database.query(query);
+        List<ApexLog> logs = (List<ApexLog>)Database.query(query, AccessLevel.USER_MODE);
 
         for (ApexLog log : logs) {
             userIds.add(log.LogUserId);
@@ -120,6 +120,7 @@ public with sharing class LogBoardController {
             SELECT Name
             FROM User
             WHERE Id IN :userIds
+            WITH USER_MODE
         ]);
 
         for (ApexLog log : logs) {
@@ -156,7 +157,9 @@ public with sharing class LogBoardController {
     }
 
     // CRUD check is not needed for custom setting
-    @SuppressWarnings('PMD.ApexCRUDViolation')
+    // Query String may contain a single quioted variables in WHERE
+    // clasue so escapeSingleQuotes method cannot be applied
+    @SuppressWarnings('PMD.ApexCRUDViolation,PMD.ApexSOQLInjection')
     @AuraEnabled(cacheable=false)
     public static Response saveLogFilter(String filter) {
         Response response = new Response();
@@ -207,7 +210,7 @@ public with sharing class LogBoardController {
         if (user == 'current') {
             userId = UserInfo.getUserId();
         } else {
-            userId = [SELECT Id FROM User WHERE Alias = :AUTOMATED_USER_ALIAS].Id;
+            userId = [SELECT Id FROM User WHERE Alias = :AUTOMATED_USER_ALIAS WITH USER_MODE].Id;
         }
 
         return userId;
@@ -296,7 +299,7 @@ public with sharing class LogBoardController {
 
     // Uppercase names are required because it used
     // to deserialize the response from Tooling API
-    @SuppressWarnings('PMD.VariableNamingConventions, PMD.FieldNamingConventions')
+    @SuppressWarnings('PMD.VariableNamingConventions,PMD.FieldNamingConventions')
     public class TraceFlagRecord {
         @AuraEnabled public Id Id;
         @AuraEnabled public Datetime ExpirationDate;
@@ -308,7 +311,7 @@ public with sharing class LogBoardController {
 
     // Uppercase name is required because it used
     // to deserialize the response from Tooling API
-    @SuppressWarnings('PMD.VariableNamingConventions, PMD.FieldNamingConventions')
+    @SuppressWarnings('PMD.VariableNamingConventions,PMD.FieldNamingConventions')
     public class DebugLevelRecord {
         @AuraEnabled public Id Id;
     }
