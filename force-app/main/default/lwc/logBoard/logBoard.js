@@ -20,6 +20,9 @@ export default class LogBoard extends LightningElement {
     DURATION_DEFAULT_CLASS = 'btn btn-secondary';
     DURATION_SELECTED_CLASS = 'btn btn-secondary btn-selected';
 
+    SEARCH_INPUT_SELECTOR = 'lightning-input[data-id="search-input"]';
+    AUTOREFRESH_TOGGLE_SELECTOR = 'lightning-input[data-id="autorefresh-toggle"]';
+
     POLLING_FREQUENCY = 3000;
 
     debugDuration = '1';
@@ -120,13 +123,13 @@ export default class LogBoard extends LightningElement {
         }
         if (setting.LGB__Is_Autorefresh__c && setting.LGB__Is_Autorefresh__c === true) {
             this.isAutoRefresh = true
-            let toggle = this.template.querySelector('lightning-input[data-id="autorefresh-toggle"]');
+            let toggle = this.template.querySelector(this.AUTOREFRESH_TOGGLE_SELECTOR);
             toggle.checked = true;
         }
     }
 
     handleAutorefreshToggle() {
-        let newValue = this.template.querySelector('lightning-input[data-id="autorefresh-toggle"]').checked;
+        let newValue = this.template.querySelector(this.AUTOREFRESH_TOGGLE_SELECTOR).checked;
         if (newValue != this.isAutoRefresh) {
             saveAutoRefreshSetting({isAutoRefresh: newValue})
             .then(result => {})
@@ -220,7 +223,8 @@ export default class LogBoard extends LightningElement {
     }
 
     calculateExparationInMS(exparationInMillisecs) {
-        this.traceFlagExpirationMS = exparationInMillisecs - Date.now();
+        this.traceFlagExpirationTarget = exparationInMillisecs;
+        this.traceFlagExpirationMS = Math.max(0, exparationInMillisecs - Date.now());
     }
 
     startCountDown() {
@@ -228,12 +232,13 @@ export default class LogBoard extends LightningElement {
 
         // Run timer code in every 1000 milliseconds
         this.timeIntervalInstance = setInterval(function() {
+            const remaining = parentThis.traceFlagExpirationTarget - Date.now();
 
-            if (parentThis.traceFlagExpirationMS <= 999) {
+            if (remaining <= 0) {
                 parentThis.traceFlagExpirationMS = 0;
                 clearInterval(parentThis.timeIntervalInstance);
             } else {
-                parentThis.traceFlagExpirationMS -= 1000;
+                parentThis.traceFlagExpirationMS = remaining;
             }
         }, 1000);
     }
@@ -323,7 +328,7 @@ export default class LogBoard extends LightningElement {
     }
 
     handleSearch() {
-        let searchTerm = this.template.querySelector('lightning-input[data-id="search-input"]').value;
+        let searchTerm = this.template.querySelector(this.SEARCH_INPUT_SELECTOR).value;
         if (!searchTerm || !this.logsData.length) {
             return;
         }
@@ -408,7 +413,7 @@ export default class LogBoard extends LightningElement {
         this.searchData = [];
         this.showSearchResults = false;
         this.searchTerm = '';
-        this.template.querySelector('lightning-input[data-id="search-input"]').value = '';
+        this.template.querySelector(this.SEARCH_INPUT_SELECTOR).value = '';
     }
 
     handleFullLog(event) {

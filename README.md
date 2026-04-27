@@ -1,58 +1,190 @@
-# Salesforce App
+# LogBoard
 
-This guide helps Salesforce developers who are new to Visual Studio Code go from zero to a deployed app using Salesforce Extensions for VS Code and Salesforce CLI.
+A Salesforce Lightning Web Component tool for managing debug trace flags and viewing Apex debug logs directly from any Lightning tab — without leaving the org.
 
-## Part 1: Choosing a Development Model
+---
 
-There are two types of developer processes or models supported in Salesforce Extensions for VS Code and Salesforce CLI. These models are explained below. Each model offers pros and cons and is fully supported.
+## 1. How to Install
 
-### Package Development Model
+Install the managed package into your Salesforce org using the link below. Open it in a browser while logged in to the target org and follow the standard installation wizard.
 
-The package development model allows you to create self-contained applications or libraries that are deployed to your org as a single package. These packages are typically developed against source-tracked orgs called scratch orgs. This development model is geared toward a more modern type of software development process that uses org source tracking, source control, and continuous integration and deployment.
-
-If you are starting a new project, we recommend that you consider the package development model. To start developing with this model in Visual Studio Code, see [Package Development Model with VS Code](https://forcedotcom.github.io/salesforcedx-vscode/articles/user-guide/package-development-model). For details about the model, see the [Package Development Model](https://trailhead.salesforce.com/en/content/learn/modules/sfdx_dev_model) Trailhead module.
-
-If you are developing against scratch orgs, use the command `SFDX: Create Project` (VS Code) or `sfdx force:project:create` (Salesforce CLI)  to create your project. If you used another command, you might want to start over with that command.
-
-When working with source-tracked orgs, use the commands `SFDX: Push Source to Org` (VS Code) or `sfdx force:source:push` (Salesforce CLI) and `SFDX: Pull Source from Org` (VS Code) or `sfdx force:source:pull` (Salesforce CLI). Do not use the `Retrieve` and `Deploy` commands with scratch orgs.
-
-### Org Development Model
-
-The org development model allows you to connect directly to a non-source-tracked org (sandbox, Developer Edition (DE) org, Trailhead Playground, or even a production org) to retrieve and deploy code directly. This model is similar to the type of development you have done in the past using tools such as Force.com IDE or MavensMate.
-
-To start developing with this model in Visual Studio Code, see [Org Development Model with VS Code](https://forcedotcom.github.io/salesforcedx-vscode/articles/user-guide/org-development-model). For details about the model, see the [Org Development Model](https://trailhead.salesforce.com/content/learn/modules/org-development-model) Trailhead module.
-
-If you are developing against non-source-tracked orgs, use the command `SFDX: Create Project with Manifest` (VS Code) or `sfdx force:project:create --manifest` (Salesforce CLI) to create your project. If you used another command, you might want to start over with this command to create a Salesforce DX project.
-
-When working with non-source-tracked orgs, use the commands `SFDX: Deploy Source to Org` (VS Code) or `sfdx force:source:deploy` (Salesforce CLI) and `SFDX: Retrieve Source from Org` (VS Code) or `sfdx force:source:retrieve` (Salesforce CLI). The `Push` and `Pull` commands work only on orgs with source tracking (scratch orgs).
-
-## The `sfdx-project.json` File
-
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
-
-The most important parts of this file for getting started are the `sfdcLoginUrl` and `packageDirectories` properties.
-
-The `sfdcLoginUrl` specifies the default login URL to use when authorizing an org.
-
-The `packageDirectories` filepath tells VS Code and Salesforce CLI where the metadata files for your project are stored. You need at least one package directory set in your file. The default setting is shown below. If you set the value of the `packageDirectories` property called `path` to `force-app`, by default your metadata goes in the `force-app` directory. If you want to change that directory to something like `src`, simply change the `path` value and make sure the directory you’re pointing to exists.
-
-```json
-"packageDirectories" : [
-    {
-      "path": "force-app",
-      "default": true
-    }
-]
+```
+/packaging/installPackage.apexp?p0=04tKY000000Z0zD
 ```
 
-## Part 2: Working with Source
+**Required post-install step — Deploy RSS and TSS**
 
-For details about developing against scratch orgs, see the [Package Development Model](https://trailhead.salesforce.com/en/content/learn/modules/sfdx_dev_model) module on Trailhead or [Package Development Model with VS Code](https://forcedotcom.github.io/salesforcedx-vscode/articles/user-guide/package-development-model).
+Before using LogBoard for the first time, you must deploy the Remote Site Setting and the Trusted Site Setting that allow the component to make authenticated callouts back to the org's own domain.
 
-For details about developing against orgs that don’t have source tracking, see the [Org Development Model](https://trailhead.salesforce.com/content/learn/modules/org-development-model) module on Trailhead or [Org Development Model with VS Code](https://forcedotcom.github.io/salesforcedx-vscode/articles/user-guide/org-development-model).
+1. Open the LogBoard tab after installation.
+2. Click the **⚙ settings** icon in the top-right corner of the component.
+3. Select **Deploy RSS and TSS** from the menu.
+4. Wait for the success toast notifications confirming both settings were created or already existed.
 
-## Part 3: Deploying to Production
+> **Note:** After clicking "Deploy RSS and TSS", the Remote Site and Trusted Site settings may take some time to become active in Salesforce. If log bodies fail to load immediately after deploying, wait a minute and try again before investigating further.
 
-Don’t deploy your code to production directly from Visual Studio Code. The deploy and retrieve commands do not support transactional operations, which means that a deployment can fail in a partial state. Also, the deploy and retrieve commands don’t run the tests needed for production deployments. The push and pull commands are disabled for orgs that don’t have source tracking, including production orgs.
+---
 
-Deploy your changes to production using [packaging](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp.htm) or by [converting your source](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_force_source.htm#cli_reference_convert) into metadata format and using the [metadata deploy command](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_force_mdapi.htm#cli_reference_deploy).
+## 2. How to Use
+
+LogBoard is exposed as a Lightning tab (`lightning__Tab` target) and can be added to any Lightning app through the App Builder.
+
+### Enabling and stopping debug logging
+
+The header bar shows the current debug status. When no trace flag is active, it displays **"Debug disabled"**.
+
+- Click **Enable** to activate a `USER_DEBUG` trace flag for the selected user. The countdown timer starts immediately, showing the remaining time in `mm:ss` format.
+- Click **Stop** to immediately expire the active trace flag.
+
+While a trace flag is active, the duration buttons are disabled to prevent accidental changes mid-session.
+
+### Selecting debug duration
+
+Five duration buttons (1 / 2 / 3 / 5 / 10 minutes) let you choose how long the trace flag will be active before clicking **Enable**. The currently selected duration is highlighted. The default is **1 minute**.
+
+### Choosing the traced user
+
+The **User** combobox in the top-right of the header lets you switch between two targets:
+
+- **Current User** — traces the user currently logged in (default).
+- **Automated Process** — traces the `autoproc` system user, useful for debugging scheduled jobs, flows, and process builder automation.
+
+Switching the user immediately re-initialises the trace flag check for the selected user.
+
+### Log table
+
+The log table lists the most recent 100 `ApexLog` records, ordered by start time (newest first). Each row shows:
+
+- **Start Time** — formatted as `HH:mm:ss, dd MMM`
+- **Operation** — the entry point that generated the log
+- **Status** — execution status (e.g. `Success`)
+- **User** — the user whose code produced the log
+- **Size** — log size in MB (displayed as `0.01` for very small logs)
+
+Each row has two action buttons: **View** (opens the log inline) and **Download** (opens the raw log file in a new browser tab via `/servlet/servlet.FileDownload`).
+
+### Viewing a log
+
+Clicking **View** on any row opens the **Log View** panel. Log lines are colour-coded for fast scanning:
+
+| Colour | Log event types |
+|--------|----------------|
+| 🟡 Yellow | `CODE_UNIT_*`, `METHOD_*` |
+| 🟣 Purple | `CALLOUT_*` |
+| 🩵 Cyan | `SOQL_EXECUTE_*` |
+| 🟢 Green | `USER_DEBUG` |
+| 🔴 Red | `EXCEPTION_THROWN`, `FATAL_ERROR` |
+
+The **Debug only** toggle filters the view to show only `USER_DEBUG` lines. If no debug lines exist, the panel shows "Nothing to show".
+
+The **Download** button inside the viewer opens the raw log file in a new tab. Close the viewer with the **Close** button or by pressing **Escape**.
+
+### Searching across logs
+
+The search input in the header searches the body of every log currently in the table simultaneously.
+
+1. Type a search term into the **search in logs** field.
+2. Press **Enter** or click the search (🔍) icon button.
+3. The **Search Results** panel opens, showing each matching line with one line of context above and below it, colour-coded using the same scheme as the log viewer.
+4. Use the **Previous** / **Next** buttons to navigate between results.
+5. Click **Open Full Log** to jump directly to the full log view for the result currently in focus.
+6. Close search results with the **✕** button or by pressing **Escape**.
+
+### Refreshing the log table
+
+- Click the **Refresh** (↺) icon button to manually reload the log list.
+- Enable the **Auto refresh** toggle to poll for new logs automatically every **3 seconds**. While auto-refresh is on, the manual refresh button is disabled. The auto-refresh preference is persisted per user via the `Log_Board_Settings__c` custom setting and restored on the next page load.
+
+### Deleting logs
+
+Click the **Delete** (🗑) icon button to delete all visible `ApexLog` records. The button is disabled when the table is empty. After deletion, the table is automatically refreshed.
+
+### Settings menu (⚙)
+
+The gear menu in the top-right corner provides three options:
+
+- **Deploy RSS and TSS** — creates or updates the Remote Site Setting and Trusted Site Setting required for log body callouts. Run this after installation or if log bodies stop loading.
+- **Edit Debug Level** — opens the standard Salesforce Debug Level editor in a new tab, pre-filtered to the current trace flag. Use this to change the verbosity of individual log categories (Apex, Workflow, Callout, etc.).
+- **Edit Log Filter** — opens an inline modal where you can set a custom SOQL `WHERE` clause that is appended to the `ApexLog` query. Only logs matching the filter are shown in the table.
+
+### Log filter
+
+The filter is the `WHERE` clause of the SOQL query that fetches logs. The default filter installed by the post-install script is:
+
+```
+Operation != '/apex/lgb__sessionidpage' AND LogLength > 1800
+```
+
+This excludes the internal Visualforce page used for session ID retrieval and hides very small (likely empty) logs. You can replace it with any valid `ApexLog` SOQL predicate, for example:
+
+```
+Status = 'Success' AND LogLength > 50000
+```
+
+Leaving the filter empty returns all logs (up to the 100-record limit). The filter is validated by running a test query before saving; an error toast is shown if the syntax is invalid.
+
+### Keyboard shortcuts
+
+| Key | Action |
+|-----|--------|
+| `Escape` | Closes the Log View, Search Results, or Edit Filter modal (whichever is open) |
+
+---
+
+## 3. Architecture
+
+### Project structure
+
+`logBoard` owns all shared state (trace flag, logs list, search results, settings) and passes data down via `@api` properties. Child components communicate upward exclusively through custom events (`viewlog`, `close`, `save`, `fulllog`).
+
+### Authentication and callouts
+
+Salesforce LWC components cannot directly call the Tooling API or the log body endpoint because they run in the browser and do not have access to a server-side session token. LogBoard works around this in two ways:
+
+1. **Tooling API calls (trace flag management)** — executed server-side via `LogBoardController` Apex methods using the implicit OAuth session (`HttpHelper` sets `Authorization: OAuth {session ID}`).
+
+2. **Log body retrieval** — the log body endpoint returns the raw text of a log file and must be called from the browser (to avoid Apex governor limits on response sizes). `getLogBodyCalloutParams()` constructs the callout URL and extracts the real session ID from `SessionIdPage.page` (a Visualforce page that echoes `{!$Api.Session_ID}` between known markers). The LWC then calls the browser `fetch()` API directly with that token. The Remote Site Setting and Trusted Site Setting created by "Deploy RSS and TSS" are required for this browser-side fetch to succeed.
+
+### Trace flag lifecycle
+
+On component load, `LogBoardController.getActiveTraceFlag` queries the Tooling API for an existing `USER_DEBUG` `TraceFlag` for the selected user. If no record exists, it creates one (with a 4-second expiry so it is immediately dormant). If a valid (non-expired) flag is found, the countdown timer starts from the remaining expiry time; otherwise the component shows "Debug disabled".
+
+Clicking **Enable** calls `updateTraceFlag`, which PATCHes the `ExpirationDate` of the existing flag to `now + duration minutes`. Clicking **Stop** PATCHes the expiry to `now + 2 seconds`, causing the flag to expire almost immediately.
+
+The countdown timer uses `Date.now()` subtraction on each tick against the stored target timestamp, so it stays accurate even when the browser tab is inactive or throttled.
+
+### Custom setting — `Log_Board_Settings__c`
+
+A Hierarchy custom setting (org-level defaults) with two fields:
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `LGB__Log_Filter__c` | Text | SOQL `WHERE` clause appended to the ApexLog query |
+| `LGB__Is_Autorefresh__c` | Checkbox | Persists the auto-refresh toggle state across sessions |
+
+Settings are read on component load via `getSettings()` and written back immediately when the user changes the filter or toggles auto-refresh.
+
+### Remote Site and Trusted Site settings (RSS / TSS)
+
+LogBoard needs to call back to the org's own domain from the browser. Two metadata records are deployed by the "Deploy RSS and TSS" action:
+
+- **Remote Site Setting (`selfRSS`)** — permits server-side Apex callouts to the org URL.
+- **CSP Trusted Site (`selfTSS`)** — adds the org URL to the Lightning Content Security Policy allowlist, enabling the browser `fetch()` calls for log bodies.
+
+Both are created by `MetadataUtility` using the SOAP Metadata API via `MetadataHelper`, authenticated with the session ID obtained from `SessionIdPage`.
+
+### Post-install script
+
+`PostInstall.cls` implements `InstallHandler` and runs automatically after package installation. It calls `Utility.createLogBoardSettings()`, which inserts an org-default `Log_Board_Settings__c` record pre-populated with the default log filter (`Operation != '/apex/lgb__sessionidpage' AND LogLength > 1800`).
+
+### Testing
+
+**Apex tests** live alongside each class (`*Test.cls`). HTTP callouts are stubbed with `LogBoardAPIMocks.cls` and `MetadataHelperMock.cls` using the `HttpCalloutMock` interface.
+
+**LWC unit tests** use `@salesforce/sfdx-lwc-jest` with Jest. All five components have a `__tests__` folder. The test runner is isolated in `lwc-jest-runner/` to manage Node/Jest version compatibility. Jest configuration files are kept in `jest-config/` at the project root.
+
+Run LWC tests with:
+
+```bash
+npm run test:unit
+```
