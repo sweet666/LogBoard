@@ -9,7 +9,7 @@ A Salesforce Lightning Web Component tool for managing debug trace flags and vie
 Install the managed package into your Salesforce org using the link below. Open it in a browser while logged in to the target org and follow the standard installation wizard.
 
 ```
-/packaging/installPackage.apexp?p0=04tKY000000Z0zD
+/packaging/installPackage.apexp?p0=04tKY000000Z1bV
 ```
 
 **Required post-install step — Deploy RSS and TSS**
@@ -23,6 +23,7 @@ Before using LogBoard for the first time, you must deploy the Remote Site Settin
 
 <img width="352" height="196" alt="Screenshot 2026-04-27 at 13 58 12" src="https://github.com/user-attachments/assets/68f7524a-3993-4f3c-9e2e-3ceb271e37e0" />
 
+
 > **Note:** After clicking "Deploy RSS and TSS", the Remote Site and Trusted Site settings may take some time to become active in Salesforce. If log bodies fail to load immediately after deploying, wait a minute and try again before investigating further.
 
 ---
@@ -32,6 +33,7 @@ Before using LogBoard for the first time, you must deploy the Remote Site Settin
 LogBoard is exposed as a Lightning tab (`Log Board` tab) and can be added to any Lightning app through the App Builder.
 
 <img width="1486" height="392" alt="Screenshot 2026-04-27 at 13 59 22" src="https://github.com/user-attachments/assets/050e0007-e046-4daa-8c18-01f59c44ecec" />
+
 
 ### Enabling and stopping debug logging
 
@@ -71,6 +73,7 @@ Each row has two action buttons: **View** (opens the log inline) and **Download*
 
 <img width="1512" height="606" alt="Screenshot 2026-04-27 at 14 00 31" src="https://github.com/user-attachments/assets/35ca2892-da91-470b-8b71-557ddbcef23d" />
 
+
 Clicking **View** on any row opens the **Log View** panel. Log lines are colour-coded for fast scanning:
 
 | Colour | Log event types |
@@ -88,6 +91,7 @@ The **Download** button inside the viewer opens the raw log file in a new tab. C
 ### Searching across logs
 
 <img width="1488" height="400" alt="Screenshot 2026-04-27 at 14 01 26" src="https://github.com/user-attachments/assets/9d16f2b9-e4cc-4fcf-a282-2a0080440aa6" />
+
 
 The search input in the header searches the body of every log currently in the table simultaneously.
 
@@ -118,6 +122,7 @@ The gear menu in the top-right corner provides three options:
 ### Log filter
 
 <img width="1488" height="400" alt="Screenshot 2026-04-27 at 14 01 26" src="https://github.com/user-attachments/assets/d2e8c908-a573-4dcc-b89e-a537c35e7eca" />
+
 
 The filter is the `WHERE` clause of the SOQL query that fetches logs. The default filter installed by the post-install script is:
 
