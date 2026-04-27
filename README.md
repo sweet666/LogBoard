@@ -14,15 +14,14 @@ Install the managed package into your Salesforce org using the link below. Open 
 
 **Required post-install step — Deploy RSS and TSS**
 
+<img width="352" height="196" alt="Screenshot 2026-04-27 at 13 58 12" src="https://github.com/user-attachments/assets/68f7524a-3993-4f3c-9e2e-3ceb271e37e0" />
+
 Before using LogBoard for the first time, you must deploy the Remote Site Setting and the Trusted Site Setting that allow the component to make authenticated callouts back to the org's own domain.
 
 1. Open the LogBoard tab after installation.
 2. Click the **⚙ settings** icon in the top-right corner of the component.
 3. Select **Deploy RSS and TSS** from the menu.
 4. Wait for the success toast notifications confirming both settings were created or already existed.
-
-<img width="352" height="196" alt="Screenshot 2026-04-27 at 13 58 12" src="https://github.com/user-attachments/assets/68f7524a-3993-4f3c-9e2e-3ceb271e37e0" />
-
 
 > **Note:** After clicking "Deploy RSS and TSS", the Remote Site and Trusted Site settings may take some time to become active in Salesforce. If log bodies fail to load immediately after deploying, wait a minute and try again before investigating further.
 
