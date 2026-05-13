@@ -7,11 +7,13 @@
     "lint": "npm run lint:lwc",
     "lint:lwc": "eslint force-app/main/default/lwc",
     "test": "npm run test:unit",
-    "test:unit": "../../lwc-jest-runner/node_modules/.bin/jest --no-coverage --config ../../lwc-jest-runner/jest.config.js",
-    "test:unit:watch": "../../lwc-jest-runner/node_modules/.bin/jest --watch --config ../../lwc-jest-runner/jest.config.js",
-    "test:unit:coverage": "../../lwc-jest-runner/node_modules/.bin/jest --coverage --config ../../lwc-jest-runner/jest.config.js",
+    "test:unit": "NODE_OPTIONS=--unhandled-rejections=warn node_modules/@salesforce/sfdx-lwc-jest/node_modules/.bin/jest --no-coverage --config jest-config/jest.config.js",
+    "test:unit:watch": "NODE_OPTIONS=--unhandled-rejections=warn node_modules/@salesforce/sfdx-lwc-jest/node_modules/.bin/jest --watch --config jest-config/jest.config.js",
+    "test:unit:coverage": "NODE_OPTIONS=--unhandled-rejections=warn node_modules/@salesforce/sfdx-lwc-jest/node_modules/.bin/jest --coverage --config jest-config/jest.config.js",
     "prettier": "prettier --write \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}\"",
-    "prettier:verify": "prettier --list-different \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}\""
+    "prettier:verify": "prettier --list-different \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}\"",
+    "test:e2e": "cd e2e-tests && npm run test:e2e",
+    "test:e2e:headless": "cd e2e-tests && npm run test:e2e:headless"
   },
   "devDependencies": {
     "@prettier/plugin-xml": "^0.7.2",

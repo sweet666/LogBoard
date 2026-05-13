@@ -1,0 +1,41 @@
+{
+  "shadow": {
+    "elements": [
+      {
+        "name": "modal",
+        "selector": { "css": "section.slds-modal" },
+        "public": true
+      },
+      {
+        "name": "closeButton",
+        "selector": { "css": "button.slds-modal__close" },
+        "public": true
+      },
+      {
+        "name": "heading",
+        "selector": { "css": "h2#modal-heading-01" },
+        "public": true
+      },
+      {
+        "name": "searchContent",
+        "selector": { "css": ".log-container lightning-formatted-rich-text" },
+        "public": true
+      },
+      {
+        "name": "openFullLogButton",
+        "selector": { "css": "button.slds-button_brand" },
+        "public": true
+      },
+      {
+        "name": "previousButton",
+        "selector": { "css": "footer button:nth-child(2)" },
+        "public": true
+      },
+      {
+        "name": "nextButton",
+        "selector": { "css": "footer button:nth-child(3)" },
+        "public": true
+      }
+    ]
+  }
+}

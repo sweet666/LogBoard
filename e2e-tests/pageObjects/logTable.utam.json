@@ -1,0 +1,58 @@
+{
+  "shadow": {
+    "elements": [
+      {
+        "name": "table",
+        "selector": { "css": "table.table-dark" },
+        "public": true
+      },
+      {
+        "name": "firstRowViewButton",
+        "selector": { "css": "tbody tr:first-child lightning-button-icon[alternative-text='View']" },
+        "nullable": true,
+        "public": true
+      },
+      {
+        "name": "firstRowDownloadButton",
+        "selector": { "css": "tbody tr:first-child lightning-button-icon[alternative-text='Download']" },
+        "nullable": true,
+        "public": true
+      },
+      {
+        "name": "firstRowUser",
+        "selector": { "css": "tbody tr:first-child td:nth-child(3) .slds-truncate" },
+        "nullable": true,
+        "public": true
+      },
+      {
+        "name": "firstRowOperation",
+        "selector": { "css": "tbody tr:first-child td:nth-child(4) .slds-truncate" },
+        "nullable": true,
+        "public": true
+      },
+      {
+        "name": "firstRowStatus",
+        "selector": { "css": "tbody tr:first-child td:nth-child(5) .status" },
+        "nullable": true,
+        "public": true
+      },
+      {
+        "name": "firstRowSize",
+        "selector": { "css": "tbody tr:first-child td:nth-child(6) .status" },
+        "nullable": true,
+        "public": true
+      },
+      {
+        "name": "firstRowStartTime",
+        "selector": { "css": "tbody tr:first-child td:nth-child(7) .slds-truncate" },
+        "nullable": true,
+        "public": true
+      },
+      {
+        "name": "emptyTableBody",
+        "selector": { "css": "tbody" },
+        "public": true
+      }
+    ]
+  }
+}

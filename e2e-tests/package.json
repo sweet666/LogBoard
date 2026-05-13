@@ -1,0 +1,25 @@
+{
+  "name": "logboard-e2e",
+  "version": "1.0.0",
+  "description": "End-to-end tests for LogBoard LWC using UTAM + WebDriverIO",
+  "private": true,
+  "scripts": {
+    "postinstall": "node scripts/install-chromedriver.js",
+    "build:pageObjects": "node_modules/.bin/utam -c utam.config.js",
+    "test:e2e": "npm run build:pageObjects && node_modules/.bin/wdio run wdio.conf.js",
+    "test:e2e:debug": "npm run build:pageObjects && node_modules/.bin/wdio run wdio.conf.js --logLevel debug",
+    "test:e2e:headless": "npm run build:pageObjects && HEADLESS=true node_modules/.bin/wdio run wdio.conf.js"
+  },
+  "devDependencies": {
+    "@utam/core": "3.0.0",
+    "@utam/loader": "3.0.0",
+    "utam": "3.0.0",
+    "wdio-utam-service": "3.0.0",
+    "webdriverio": "^8.31.1",
+    "@wdio/cli": "^8.31.1",
+    "@wdio/local-runner": "^8.31.1",
+    "@wdio/mocha-framework": "^8.29.1",
+    "@wdio/spec-reporter": "^8.29.1",
+    "wdio-chromedriver-service": "^8.1.1"
+  }
+}

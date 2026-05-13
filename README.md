@@ -201,3 +201,75 @@ Run LWC tests with:
 ```bash
 npm run test:unit
 ```
+
+**E2E tests** use [WebDriverIO](https://webdriver.io/) with the [UTAM](https://utam.dev/) page object framework. They run against a real Salesforce org through Chrome and cover the full user-facing workflow: debug flag lifecycle, log table interactions, log viewer, search, and the log filter editor. Tests live in `e2e-tests/`.
+
+---
+
+## 4. Running E2E Tests
+
+### Prerequisites
+
+- **Node.js 18+** and **npm 9+**
+- **Google Chrome** installed on the machine running the tests
+- The LogBoard component deployed to a Salesforce org (see section 1)
+- The RSS and TSS settings deployed in that org (see section 1)
+- A dedicated test user with the `System Administrator` profile (or at minimum: `Modify All Data`, `Author Apex`, `Manage Users` permissions)
+
+> **Tip:** Use a scratch org or a developer sandbox so test runs don't pollute production logs.
+
+### 1. Install dependencies
+
+```bash
+cd e2e-tests
+npm install
+```
+
+### 2. Set environment variables
+
+The test suite reads credentials from environment variables — never hard-code them in source files.
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `SF_ORG_URL` | ✅ | Login URL of the org, e.g. `https://login.salesforce.com` or `https://myorg.my.salesforce.com` |
+| `SF_USERNAME` | ✅ | Username of the test user |
+| `SF_PASSWORD` | ✅ | Password of the test user |
+| `SF_APP_URL` | optional | Full Lightning URL to the LogBoard tab. Auto-built from `SF_ORG_URL` if omitted (`/lightning/n/lgb__Log_Board`) |
+| `HEADLESS` | optional | Set to `true` to run Chrome in headless mode (useful in CI) |
+
+Export them in your shell session:
+
+```bash
+export SF_ORG_URL="https://your-org.my.salesforce.com"
+export SF_USERNAME="testuser@your-org.com"
+export SF_PASSWORD="yourPassword"
+```
+
+Or pass them inline:
+
+```bash
+SF_ORG_URL=https://your-org.my.salesforce.com \
+SF_USERNAME=testuser@your-org.com \
+SF_PASSWORD=yourPassword \
+npm run test:e2e
+```
+
+### 3. Build page objects and run tests
+
+```bash
+# Headed Chrome (default)
+npm run test:e2e
+
+# Headless Chrome (for CI / no display)
+npm run test:e2e:headless
+
+# Verbose output for debugging
+npm run test:e2e:debug
+```
+
+You can also run these from the project root:
+
+```bash
+npm run test:e2e
+npm run test:e2e:headless
+```
