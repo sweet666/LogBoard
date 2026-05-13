@@ -16,6 +16,13 @@
 # LWC Jest coverage reports
 coverage/
 
+# E2E – compiled UTAM page objects (generated; do not commit)
+e2e-tests/__utam__/
+
+# E2E – persistent Chrome profile (cookies + Salesforce device-trust marker
+# live here; do not commit, would leak session credentials)
+e2e-tests/.chrome-profile/
+
 # Logs
 logs
 *.log

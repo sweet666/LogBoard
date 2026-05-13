@@ -1,10 +1,12 @@
 /**
- * Custom Jest resolver that makes @salesforce/sfdx-lwc-jest@0.7.x work with Jest 27+.
+ * Custom Jest resolver that makes @salesforce/sfdx-lwc-jest@0.7.x work with
+ * both Jest 24 (the version pinned by sfdx-lwc-jest) and Jest 27+.
  *
  * Jest 27 changed custom resolvers: the default resolver is now passed as
  * `options.defaultResolver` instead of being importable from a private path.
- * The old @lwc/jest-resolver still tries to `require('jest-resolve/build/defaultResolver')`
- * which no longer exists.  This shim bypasses it entirely.
+ * Jest 24 does not supply `options.defaultResolver`; instead its default resolver
+ * lives at `jest-resolve/build/defaultResolver` (inside the sfdx-lwc-jest
+ * nested node_modules). This shim handles both cases.
  */
 
 'use strict';
@@ -55,9 +57,29 @@ function getLwcComponentPath(name) {
     return null;
 }
 
-module.exports = function resolver(request, options) {
-    const defaultResolver = options.defaultResolver;
+/**
+ * Obtain the default resolver compatible with the running Jest version.
+ *
+ * - Jest 27+: supplies `options.defaultResolver` directly.
+ * - Jest 24:  exposes it at `jest-resolve/build/defaultResolver` (as a named
+ *             export `default`), resolved from sfdx-lwc-jest's own node_modules.
+ */
+function getDefaultResolver(options) {
+    if (typeof options.defaultResolver === 'function') {
+        // Jest 27+ path
+        return options.defaultResolver;
+    }
+    // Jest 24 path — require from the sfdx-lwc-jest scoped node_modules
+    const resolverPath = require.resolve(
+        'jest-resolve/build/defaultResolver',
+        { paths: [path.join(PROJECT_ROOT, 'node_modules/@salesforce/sfdx-lwc-jest/node_modules')] }
+    );
+    const mod = require(resolverPath);
+    // The module exports `default` (ESM-style compiled to CJS)
+    return mod.default || mod;
+}
 
+module.exports = function resolver(request, options) {
     // 1. lwc → @lwc/engine
     if (WHITELISTED[request]) return WHITELISTED[request];
 
@@ -66,9 +88,9 @@ module.exports = function resolver(request, options) {
 
     // 3. lightning/* → stubs
     if (request.startsWith('lightning/')) {
-        const name     = request.slice('lightning/'.length);
-        const camel    = toCamelCase(name);
-        const stub     = getLightningStub(camel) || getLightningStub(name);
+        const name  = request.slice('lightning/'.length);
+        const camel = toCamelCase(name);
+        const stub  = getLightningStub(camel) || getLightningStub(name);
         if (stub) return stub;
     }
 
@@ -84,6 +106,6 @@ module.exports = function resolver(request, options) {
     //    Fall through to the default resolver — if the moduleNameMapper fires
     //    first this branch won't even be reached.
 
-    // 6. Default
-    return defaultResolver(request, options);
+    // 6. Default (works with both Jest 24 and Jest 27+)
+    return getDefaultResolver(options)(request, options);
 };

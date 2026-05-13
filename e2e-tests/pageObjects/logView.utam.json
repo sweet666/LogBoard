@@ -1,0 +1,36 @@
+{
+  "shadow": {
+    "elements": [
+      {
+        "name": "modal",
+        "selector": { "css": "section.slds-modal" },
+        "public": true
+      },
+      {
+        "name": "closeButton",
+        "selector": { "css": "button[title='Cancel']" },
+        "public": true
+      },
+      {
+        "name": "downloadButton",
+        "selector": { "css": "button.slds-button_brand" },
+        "public": true
+      },
+      {
+        "name": "debugOnlyToggle",
+        "selector": { "css": "lightning-input[label='Debug Only']" },
+        "public": true
+      },
+      {
+        "name": "logContent",
+        "selector": { "css": ".log-container lightning-formatted-rich-text" },
+        "public": true
+      },
+      {
+        "name": "backdrop",
+        "selector": { "css": ".slds-backdrop" },
+        "public": true
+      }
+    ]
+  }
+}

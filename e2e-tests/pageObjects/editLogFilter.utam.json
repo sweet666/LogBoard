@@ -1,0 +1,41 @@
+{
+  "shadow": {
+    "elements": [
+      {
+        "name": "modal",
+        "selector": { "css": "section.slds-modal" },
+        "public": true
+      },
+      {
+        "name": "closeIconButton",
+        "selector": { "css": "header button.slds-modal__close" },
+        "public": true
+      },
+      {
+        "name": "heading",
+        "selector": { "css": "h2#modal-heading-01" },
+        "public": true
+      },
+      {
+        "name": "filterTextarea",
+        "selector": { "css": "lightning-textarea[name='filter']" },
+        "public": true
+      },
+      {
+        "name": "closeButton",
+        "selector": { "css": "footer button.slds-button_neutral:first-child" },
+        "public": true
+      },
+      {
+        "name": "setDefaultButton",
+        "selector": { "css": "footer button.slds-button_neutral:nth-child(2)" },
+        "public": true
+      },
+      {
+        "name": "saveButton",
+        "selector": { "css": "footer button.slds-button_brand" },
+        "public": true
+      }
+    ]
+  }
+}

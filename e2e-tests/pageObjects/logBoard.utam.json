@@ -1,0 +1,116 @@
+{
+  "shadow": {
+    "elements": [
+      {
+        "name": "spinner",
+        "selector": { "css": "lightning-spinner" },
+        "nullable": true,
+        "public": true
+      },
+      {
+        "name": "traceFlagExpiration",
+        "selector": { "css": ".header-block.exparation" },
+        "public": true
+      },
+      {
+        "name": "enableButton",
+        "selector": { "css": "lightning-button[name='EnableLogs']" },
+        "nullable": true,
+        "public": true
+      },
+      {
+        "name": "stopButton",
+        "selector": { "css": "lightning-button[name='StopLogs']" },
+        "nullable": true,
+        "public": true
+      },
+      {
+        "name": "duration1Button",
+        "selector": { "css": "button[data-id='1']" },
+        "public": true
+      },
+      {
+        "name": "duration2Button",
+        "selector": { "css": "button[data-id='2']" },
+        "public": true
+      },
+      {
+        "name": "duration3Button",
+        "selector": { "css": "button[data-id='3']" },
+        "public": true
+      },
+      {
+        "name": "duration5Button",
+        "selector": { "css": "button[data-id='5']" },
+        "public": true
+      },
+      {
+        "name": "duration10Button",
+        "selector": { "css": "button[data-id='10']" },
+        "public": true
+      },
+      {
+        "name": "deleteLogsButton",
+        "selector": { "css": "lightning-button-icon[title='Delete All Logs']" },
+        "public": true
+      },
+      {
+        "name": "refreshButton",
+        "selector": { "css": "lightning-button-icon[title='Refresh']" },
+        "public": true
+      },
+      {
+        "name": "autoRefreshToggle",
+        "selector": { "css": "lightning-input[data-id='autorefresh-toggle']" },
+        "public": true
+      },
+      {
+        "name": "searchInput",
+        "selector": { "css": "lightning-input[data-id='search-input']" },
+        "public": true
+      },
+      {
+        "name": "searchButton",
+        "selector": { "css": "lightning-button-icon[title='Search']" },
+        "public": true
+      },
+      {
+        "name": "userCombobox",
+        "selector": { "css": "lightning-combobox" },
+        "public": true
+      },
+      {
+        "name": "settingsMenu",
+        "selector": { "css": "lightning-button-menu" },
+        "public": true
+      },
+      {
+        "name": "logTable",
+        "selector": { "css": "c-log-table" },
+        "type": "utam-lgb/pageObjects/logTable",
+        "public": true
+      },
+      {
+        "name": "logView",
+        "selector": { "css": "c-log-view" },
+        "type": "utam-lgb/pageObjects/logView",
+        "nullable": true,
+        "public": true
+      },
+      {
+        "name": "logSearchResult",
+        "selector": { "css": "c-log-search-result" },
+        "type": "utam-lgb/pageObjects/logSearchResult",
+        "nullable": true,
+        "public": true
+      },
+      {
+        "name": "editLogFilter",
+        "selector": { "css": "c-edit-log-filter" },
+        "type": "utam-lgb/pageObjects/editLogFilter",
+        "nullable": true,
+        "public": true
+      }
+    ]
+  }
+}
